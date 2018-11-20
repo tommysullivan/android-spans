@@ -10,6 +10,7 @@ import org.junit.Test
 
 //TODO: Support %d, %dm, %dd, %dh - tough because we would need to retrieve subSpans as number and date objects (now we have only fullText())
 //TODO: DRY up these tests since we repeat nearly the same thing
+//TODO: Use get() fields for no-arg methods of the style and other interfaces
 class ExampleUnitTest {
     class MockSpannableStringFactory(private val mockSpannableString: SpannableString) : SpannableStringFactory {
         override fun newSpannableString(text: String):SpannableString = mockSpannableString
@@ -32,8 +33,10 @@ class ExampleUnitTest {
             .build()
 
         assertEquals("Tommy is red but not blue", span.fullText())
-//        assertNotNull(span.asSpannableString())
         verify { mockSpannableString.setSpan(any(), 5, 12, any()) }
+
+        //TODO: Get spannablestring from node
+//        assertNotNull(span.asSpannableString())
     }
 
     @Test
