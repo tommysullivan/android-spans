@@ -1,6 +1,7 @@
-package com.classdojo.android.immutable.spannable
+package com.classdojo.android.spans.impl
 
 import android.graphics.Color;
+import com.classdojo.android.spans.interfaces.StyleBuilder
 
 class ColorImpl(private val newStyleBuilderWithColor: (Int) -> StyleBuilder) : StyleBuilder.Color {
 

@@ -1,4 +1,6 @@
-package com.classdojo.android.immutable.spannable
+package com.classdojo.android.spans.impl
+
+import com.classdojo.android.spans.interfaces.StyleBuilder
 
 class SizeImpl<T>(
     private val newStyleBuilderWithColor: Function1<T, StyleBuilder>,

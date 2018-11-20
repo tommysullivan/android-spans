@@ -1,10 +1,10 @@
-package com.classdojo.android.immutable.spannable
+package com.classdojo.android.spans.interfaces
 
 import android.support.annotation.ColorInt
 import android.support.annotation.FloatRange
 
 interface StyleBuilder {
-    fun color(): StyleBuilder.Color
+    fun color(): Color
     fun color(@ColorInt color: Int?): StyleBuilder
 
     interface Color {

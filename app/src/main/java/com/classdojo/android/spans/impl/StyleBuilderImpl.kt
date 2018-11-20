@@ -1,15 +1,18 @@
-package com.classdojo.android.immutable.spannable
+package com.classdojo.android.spans.impl
 
 import android.support.annotation.ColorInt
 import android.support.annotation.FloatRange
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
-import com.classdojo.android.spans.SpannableString
+import com.classdojo.android.spans.interfaces.SpannableString
+import com.classdojo.android.spans.interfaces.StyleBuilder
+import com.classdojo.android.spans.interfaces.StyleBuilderFactory
+import com.classdojo.android.spans.interfaces.StyleReader
 
 class StyleBuilderImpl(
     private val styleObjects: List<Any>,
-    private val newStyleBuilder: Function1<List<Any>, StyleBuilder>
+    private val styleBuilderFactory: StyleBuilderFactory
 ) : StyleBuilder, StyleReader {
 
     override fun color(): StyleBuilder.Color {
@@ -25,7 +28,7 @@ class StyleBuilderImpl(
     }
 
     private fun newStyleBuilderWithAdditionalStyle(additionalStyle: Any): StyleBuilder {
-        return newStyleBuilder.invoke(styleObjects + additionalStyle)
+        return styleBuilderFactory.newStyleBuilder(styleObjects + additionalStyle)
     }
 
     override fun sizeRelative(): StyleBuilder.Size {

@@ -1,6 +1,4 @@
-package com.classdojo.android.immutable.spannable
-
-import com.classdojo.android.spans.SpannableString
+package com.classdojo.android.spans.interfaces
 
 interface StyleReader {
     fun applyStyleToSpannable(spannableString: SpannableString, startIndex: Int, EndIndex: Int): SpannableString

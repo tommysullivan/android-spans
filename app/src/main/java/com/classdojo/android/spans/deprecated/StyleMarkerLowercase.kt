@@ -1,4 +1,4 @@
-package com.classdojo.android.immutable.spannable
+package com.classdojo.android.spans.deprecated
 
 //package com.classdojo.android.utility.spannable;
 //
