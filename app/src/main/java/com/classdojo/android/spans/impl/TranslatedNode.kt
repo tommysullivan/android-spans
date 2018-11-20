@@ -1,7 +1,6 @@
 package com.classdojo.android.spans.impl
 
 import android.support.annotation.StringRes
-import com.classdojo.android.spans.interfaces.NodeReader
 import com.classdojo.android.spans.interfaces.NodeReaderBasic
 import com.classdojo.android.spans.interfaces.SpannableFactory
 import com.classdojo.android.spans.interfaces.StyleMarker
@@ -10,18 +9,18 @@ class TranslatedNode(
     @StringRes private val stringResourceId:Int,
     private val substitutions:List<NodeReaderBasic>,
     private val spannableFactory: SpannableFactory,
-    private val getStringResourceWithoutPerformingReplacements:(value:Int) -> String,
-    private val getStringResourceWithReplacements:(value:Int, replacements:List<String>) -> String
+    private val getStringResourceWithoutPerformingReplacements:(value:Int) -> String
 ) : NodeReaderBasic {
 
     override fun fullText(): String {
-        return getStringResourceWithReplacements(
-            stringResourceId,
-            substitutions.map{s -> s.fullText()}
-        )
+        return containerNode().fullText()
     }
 
     override fun styleMarkersFromOutermostToInnermost(): List<StyleMarker> {
+        return containerNode().styleMarkersFromOutermostToInnermost()
+    }
+
+    fun containerNode():NodeReaderBasic {
         return spannableFactory.newContainerNodeReader(
             sections().map{section ->
                 if(section.isPlainText) spannableFactory.newTextNodeReader(section.text)
@@ -31,39 +30,67 @@ class TranslatedNode(
                     section.replacementIndex!!
                 )
             }
-        ).styleMarkersFromOutermostToInnermost()
+        )
     }
 
     class Section(public val isPlainText:Boolean, public val text:String, public val replacementIndex:Int?) {}
 
     fun sections():List<Section> {
-        val regexString = "(?<!%)(%\\d+\\\$(dd|dm|dh|[ds]))"
-        val regex = Regex(regexString)
-        val template = getStringResourceWithoutPerformingReplacements(stringResourceId)
+//        val regexString = "(?<!%)(%(\\d+)\\\$(dd|dm|dh|[ds]))"
+        val placholderOrEscapedPercentRegex = Regex("%((\\d+)\\\$)?(%|dd|dm|dh|[ds])")
+        val stringResourceWithPlaceholders = getStringResourceWithoutPerformingReplacements(stringResourceId)
         val zero = Pair(emptyList<Section>(), 0)
-        val parts = regex.findAll(template).fold(zero) { soFar, current ->
-            val newIndex = current.range.endInclusive + 1
-            val currentStartIndex = current.range.start
-
-            //TODO: Find the correct replacementIndex
-            val replacementIndex = 1
-
-            val currentSection =
-                Section(false, current.value, replacementIndex)
-            if(currentStartIndex == soFar.second)
-                Pair(soFar.first + currentSection, newIndex)
-            else {
-                val textPrecedingCurrentMatch = template.substring(soFar.second, currentStartIndex)
-                val textSection =
-                    Section(true, textPrecedingCurrentMatch, -1)
-                Pair(soFar.first + textSection + currentSection, newIndex)
+        val parts = placholderOrEscapedPercentRegex
+            .findAll(stringResourceWithPlaceholders)
+            .fold(zero) { soFar, current ->
+                foldMatchesIntoAllStringSections(current, soFar, stringResourceWithPlaceholders)
             }
+
+        val startIndexOfLastPlainTextSection = parts.second
+        val allSectionsExceptPossibleLastTextSection = parts.first
+        val atEndOfString = startIndexOfLastPlainTextSection == stringResourceWithPlaceholders.lastIndex
+        val allSections = if(atEndOfString)
+            allSectionsExceptPossibleLastTextSection
+        else {
+            val lastPlainTextSection = Section(
+                true,
+                stringResourceWithPlaceholders.substring(startIndexOfLastPlainTextSection),
+                -1
+            )
+            allSectionsExceptPossibleLastTextSection + lastPlainTextSection
         }
-        return if(parts.second == template.lastIndex) parts.first
-        else parts.first + Section(
-            true,
-            template.substring(parts.second),
-            -1
-        )
+
+        return allSections
+    }
+
+    private fun foldMatchesIntoAllStringSections(
+        currentMatch: MatchResult,
+        soFar: Pair<List<Section>, Int>,
+        template: String
+    ): Pair<List<Section>, Int> {
+        val newIndex = currentMatch.range.endInclusive + 1
+        val currentStartIndex = currentMatch.range.start
+        val currentSection = getCurrentSection(currentMatch)
+        val startIndexOfLastPlainTextSection = soFar.second
+        val needToAppendPrecedingPlainTextBeforeCurrentSection = currentStartIndex != startIndexOfLastPlainTextSection
+        val newlyCompletedSections = if (needToAppendPrecedingPlainTextBeforeCurrentSection) {
+            val textPrecedingCurrentMatch = template.substring(soFar.second, currentStartIndex)
+            val sectionOfTextPrecedingCurrentMatch = Section(
+                true,
+                textPrecedingCurrentMatch,
+                -1
+            )
+            listOf(sectionOfTextPrecedingCurrentMatch, currentSection)
+        } else listOf(currentSection)
+        return Pair(soFar.first + newlyCompletedSections, newIndex)
+    }
+
+    private fun getCurrentSection(currentMatch: MatchResult): Section {
+        return if (currentMatch.value == "%%") {
+            Section(true, "%", -1)
+        } else {
+            val replacementIndex = currentMatch.groupValues[2].toInt() - 1
+            Section(false, currentMatch.value, replacementIndex)
+        }
     }
 }

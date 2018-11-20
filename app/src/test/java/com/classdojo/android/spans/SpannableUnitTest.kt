@@ -11,7 +11,7 @@ import org.junit.Test
 //TODO: Support %d, %dm, %dd, %dh - tough because we would need to retrieve subSpans as number and date objects (now we have only fullText())
 //TODO: DRY up these tests since we repeat nearly the same thing
 //TODO: Use get() fields for no-arg methods of the style and other interfaces
-class ExampleUnitTest {
+class SpannableUnitTest {
     class MockSpannableStringFactory(private val mockSpannableString: SpannableString) : SpannableStringFactory {
         override fun newSpannableString(text: String):SpannableString = mockSpannableString
     }
@@ -24,7 +24,6 @@ class ExampleUnitTest {
         val spannableFactory = SpannableFactoryImpl(mockSpannableStringFactory)
         val spans = spannableFactory.newNodeBuilder()
         val styles = spannableFactory.newStyleBuilder()
-
         val span = spans
             .addText("Tommy")
             .addStyledText(styles.color().red().build(), " is red")
@@ -32,11 +31,11 @@ class ExampleUnitTest {
             .addStyledSpan(styles.color().green().build(), spans.addText("green text").build())
             .build()
 
-        assertEquals("Tommy is red but not blue", span.fullText())
-        verify { mockSpannableString.setSpan(any(), 5, 12, any()) }
+        assertEquals("Tommy is red but not bluegreen text", span.fullText())
 
         //TODO: Get spannablestring from node
 //        assertNotNull(span.asSpannableString())
+//        verify { mockSpannableString.setSpan(any(), 5, 12, any()) }
     }
 
     @Test
@@ -49,8 +48,7 @@ class ExampleUnitTest {
             1,
             emptyList(),
             spannableFactory,
-            { i -> "sfidhsiduhs" },
-            { i, _ -> "sfidhsiduhs" }
+            { i -> "sfidhsiduhs" }
         )
         assertEquals("sfidhsiduhs", translatedNode.fullText())
         assertEquals(emptyList<StyleMarker>(), translatedNode.styleMarkersFromOutermostToInnermost())
@@ -72,11 +70,10 @@ class ExampleUnitTest {
                 spans.addStyledText(styles.color().red().build(), " flaenu ").build()
             ),
             spannableFactory,
-            { i -> template },
-            { i, replacements -> String.format(template, *replacements.toTypedArray()) }
+            { i -> template }
         )
         assertEquals("tom swenu mike swenu  flaenu myes%3\$s", translatedNode.fullText())
-        assertEquals(listOf("tom", "%1\$s", "mike", "%1\$s", "%2\$s", "myes%%3\$s"), translatedNode.sections().map{s -> s.text})
+        assertEquals(listOf("tom", "%1\$s", "mike", "%1\$s", "%2\$s", "myes", "%", "3\$s"), translatedNode.sections().map{s -> s.text})
 
         //TODO: Assert appropriate styles in the right places
 //        assertEquals(emptyList<StyleMarker>(), translatedNode.styleMarkersFromOutermostToInnermost())

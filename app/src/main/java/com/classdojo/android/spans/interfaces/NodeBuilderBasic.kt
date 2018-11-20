@@ -8,3 +8,10 @@ interface NodeBuilderBasic<T : NodeBuilderBasic<T>> {
     //TODO: Make build() return NodeReaderBasic or something that extends it
     fun build(): NodeReaderBasic
 }
+
+//interface Eq<F> {
+//    fun F.eqv(b: F): Boolean
+//
+//    fun F.neqv(b: F): Boolean =
+//        !eqv(b)
+//}
