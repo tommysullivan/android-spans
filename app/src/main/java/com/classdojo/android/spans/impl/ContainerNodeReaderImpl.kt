@@ -3,7 +3,7 @@ package com.classdojo.android.spans.impl
 import com.classdojo.android.spans.interfaces.NodeReaderBasic
 import com.classdojo.android.spans.interfaces.StyleMarker
 
-class ContainerNodeReader(
+class ContainerNodeReaderImpl (
     private val childNodeBuilders: List<NodeReaderBasic>
 ) : NodeReaderBasic {
     override fun fullText(): String {

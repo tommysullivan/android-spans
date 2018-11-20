@@ -2,14 +2,14 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.*
 
-class StyledNodeBuilder<T : NodeBuilderBasic<T>>(
+class StyledNodeBuilderImpl<T : NodeBuilderBasic<T>>(
     private val styledNodeFactory:StyledNodeFactory<T>,
     private val containerNodeFactory: ContainerNodeFactory<T>,
     private val styleReader: StyleReader,
     private val nodeReader: NodeReaderBasic
 ) : NodeBuilderBasic<T> {
 
-//    TODO: Figure out if we want this specialization somewhere, else delete and assume it is impl more generally by NodeBuilderEnhanced impl
+//    TODO: This specialization would require that we track a styleBuilder and not just a styleReader
 //    override fun addText(text: String): NodeBuilder {
 //        return spannableFactory.newStyledNodeBuilder(
 //            styleBuilder,

@@ -1,9 +1,9 @@
 package com.classdojo.android.spans.interfaces
 
-interface NodeBuilderEnhanced<T : NodeBuilderEnhanced<T>> {
-    fun addText(text: String): T
-    fun addStyledText(styleBuilder: StyleBuilder, text: String): T
-    fun newLine(): T {
+interface NodeBuilderEnhanced : NodeBuilderBasic<NodeBuilderEnhanced> {
+    fun addText(text: String): NodeBuilderEnhanced
+    fun addStyledText(styleBuilder: StyleReader, text: String): NodeBuilderEnhanced
+    fun newLine(): NodeBuilderEnhanced {
         return addText("\n")
     }
 }
