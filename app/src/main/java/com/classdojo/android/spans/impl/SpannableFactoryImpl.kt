@@ -16,17 +16,18 @@ class SpannableFactoryImpl(
             ContainerNodeBuilder<NodeBuilderEnhanced>(
                 this,
                 this,
-                childNodes,
-                newNodeReader(newContainerNodeReader(childNodes))
-            )
+                childNodes
+            ),
+            newNodeReader(newContainerNodeReader(childNodes))
         )
     }
 
-    private fun newNodeBuilderEnhanced(nodeBuilderBasic: NodeBuilderBasic<NodeBuilderEnhanced>):NodeBuilderEnhanced {
+    private fun newNodeBuilderEnhanced(nodeBuilderBasic: NodeBuilderBasic<NodeBuilderEnhanced>, nodeReader:NodeReader):NodeBuilderEnhanced {
         return NodeBuilderEnhancedImpl(
             NodeBuilderTextHelpersImpl(this, this, nodeBuilderBasic),
             nodeBuilderBasic,
-            TranslatedTextBuilderImpl(this, nodeBuilderBasic, newStyleBuilder().build())
+            TranslatedTextBuilderImpl(this, nodeBuilderBasic, newStyleBuilder().build()),
+            NodeBuilderImpl(nodeReader)
         )
     }
 
@@ -47,8 +48,9 @@ class SpannableFactoryImpl(
                 this,
                 this,
                 styleReader,
-                newNodeReader(newStyledNodeReader(styleReader, nodeToStyle))
-            )
+                nodeToStyle
+            ),
+            newNodeReader(newStyledNodeReader(styleReader, nodeToStyle))
         )
     }
 
@@ -73,13 +75,14 @@ class SpannableFactoryImpl(
     }
 
     override fun newTextNodeBuilder(text: String): NodeBuilderEnhanced {
+        val textNodeReader = newNodeReader(newTextNodeReader(text))
         return newNodeBuilderEnhanced(
             TextNodeBuilder<NodeBuilderEnhanced>(
                 this,
                 this,
-                newNodeReader(newTextNodeReader(text)),
-                this
-            )
+                textNodeReader
+            ),
+            textNodeReader
         )
     }
 

@@ -5,8 +5,7 @@ import com.classdojo.android.spans.interfaces.*
 class ContainerNodeBuilder<T> (
     private val styledNodeFactory: StyledNodeFactory<T>,
     private val containerNodeFactory: ContainerNodeFactory<T>,
-    private val childNodeReaders: List<NodeReaderBasic>,
-    private val nodeReader: NodeReader
+    private val childNodeReaders: List<NodeReaderBasic>
 ) : NodeBuilderBasic<T>
 {
     override fun addStyledSpan(styleReader: StyleReader, nodeReader: NodeReaderBasic): T {
@@ -17,7 +16,4 @@ class ContainerNodeBuilder<T> (
         return containerNodeFactory.newContainerNodeBuilder(childNodeReaders + newSpanBuilder)
     }
 
-    override fun build(): NodeReader {
-        return nodeReader
-    }
 }

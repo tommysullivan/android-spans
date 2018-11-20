@@ -1,15 +1,14 @@
 package com.classdojo.android.spans.impl
 
-import com.classdojo.android.spans.interfaces.NodeBuilderBasic
-import com.classdojo.android.spans.interfaces.NodeBuilderEnhanced
-import com.classdojo.android.spans.interfaces.NodeBuilderTextHelpers
-import com.classdojo.android.spans.interfaces.TranslatedTextBuilder
+import com.classdojo.android.spans.interfaces.*
 
 class NodeBuilderEnhancedImpl(
     nodeBuilderTextHelpers:NodeBuilderTextHelpers<NodeBuilderEnhanced>,
     nodeBuilderBasic:NodeBuilderBasic<NodeBuilderEnhanced>,
-    translatedTextBuilder:TranslatedTextBuilder<NodeBuilderEnhanced>
+    translatedTextBuilder:TranslatedTextBuilder<NodeBuilderEnhanced>,
+    nodeBuilder:NodeBuilder
 ) : NodeBuilderEnhanced,
     NodeBuilderTextHelpers<NodeBuilderEnhanced> by nodeBuilderTextHelpers,
     NodeBuilderBasic<NodeBuilderEnhanced> by nodeBuilderBasic,
-    TranslatedTextBuilder<NodeBuilderEnhanced> by translatedTextBuilder
+    TranslatedTextBuilder<NodeBuilderEnhanced> by translatedTextBuilder,
+    NodeBuilder by nodeBuilder
