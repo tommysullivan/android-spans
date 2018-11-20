@@ -13,6 +13,11 @@ After cloning the repository to a development environment, development tasks can
 
 * Enhancements
 
+** Must
+TODO: Add click styling with callback
+TODO: Integration test within classdojo
+
+** Should
 TODO: Support %d, %dm, %dd, %dh - tough because we would need to retrieve subSpans as number and date objects (now we have only fullText())
 TODO: Use get() fields for no-arg methods of the style and other interfaces
 TODO: Memoize all instance computations (even functions with same arguments can be memoized)
