@@ -3,8 +3,10 @@ package com.classdojo.android.spans.impl
 import android.support.annotation.ColorInt
 import android.support.annotation.FloatRange
 import android.text.style.AbsoluteSizeSpan
+import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
+import android.view.View
 import com.classdojo.android.spans.interfaces.SpannableString
 import com.classdojo.android.spans.interfaces.StyleBuilder
 import com.classdojo.android.spans.interfaces.StyleBuilderFactory
@@ -17,6 +19,16 @@ class StyleBuilderImpl(
 
     override fun color(): StyleBuilder.Color {
         return ColorImpl { color: Int -> this.color(color) }
+    }
+
+    class CustomClickableSpan(private val clickHandler:() -> Unit) : ClickableSpan() {
+        override fun onClick(widget: View) {
+            clickHandler()
+        }
+    }
+
+    override fun onClick(clickHandler:() -> Unit):StyleBuilder {
+        return newStyleBuilderWithAdditionalStyle(CustomClickableSpan(clickHandler))
     }
 
     override fun color(@ColorInt color: Int?): StyleBuilder {

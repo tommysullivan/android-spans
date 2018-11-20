@@ -30,5 +30,7 @@ interface StyleBuilder {
         fun huge(): StyleBuilder
     }
 
+    fun onClick(clickHandler:() -> Unit):StyleBuilder
+
     fun build(): StyleReader
 }

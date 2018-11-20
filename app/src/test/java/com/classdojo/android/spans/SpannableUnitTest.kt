@@ -27,7 +27,10 @@ class SpannableUnitTest {
             .addText("Tommy")
             .addStyledText(styles.color().red().build(), " is red")
             .addText(" but not blue")
-            .addStyledSpan(styles.color().green().build(), spans.addText("green text").build())
+            .addStyledSpan(
+                styles.color().green().onClick{-> Unit}.build(),
+                spans.addText("green text").build()
+            )
             .build()
 
         assertEquals("Tommy is red but not bluegreen text", span.fullText())
