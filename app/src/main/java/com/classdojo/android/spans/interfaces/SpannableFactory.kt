@@ -6,7 +6,6 @@ interface SpannableFactory :
     StyledNodeFactory<NodeBuilderEnhanced>,
     StyleMarkerFactory,
     StyleBuilderFactory,
-    SpannableStringFactory
-{
-    fun newNodeBuilder():NodeBuilderEnhanced
-}
+    SpannableStringFactory,
+    TranslatedNodeFactory,
+    TextNodeBuilderFactory<NodeBuilderEnhanced>

@@ -1,15 +1,14 @@
 package com.classdojo.android.spans.impl
 
 import android.support.annotation.StringRes
-import com.classdojo.android.spans.interfaces.NodeReaderBasic
-import com.classdojo.android.spans.interfaces.SpannableFactory
-import com.classdojo.android.spans.interfaces.StyleMarker
+import com.classdojo.android.spans.interfaces.*
 
 class TranslatedNode(
     @StringRes private val stringResourceId:Int,
     private val substitutions:List<NodeReaderBasic>,
-    private val spannableFactory: SpannableFactory,
-    private val getStringResourceWithoutPerformingReplacements:(value:Int) -> String
+    private val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String,
+    private val textReaderFactory: TextNodeFactory,
+    private val containerFactory: ContainerNodeFactory<NodeBuilderEnhanced>
 ) : NodeReaderBasic {
 
     override fun fullText(): String {
@@ -21,9 +20,9 @@ class TranslatedNode(
     }
 
     fun containerNode():NodeReaderBasic {
-        return spannableFactory.newContainerNodeReader(
+        return containerFactory.newContainerNodeReader(
             sections().map{section ->
-                if(section.isPlainText) spannableFactory.newTextNodeReader(section.text)
+                if(section.isPlainText) textReaderFactory.newTextNodeReader(section.text)
                 else StringFormattedNode(
                     section.text,
                     substitutions,
@@ -36,7 +35,6 @@ class TranslatedNode(
     class Section(public val isPlainText:Boolean, public val text:String, public val replacementIndex:Int?) {}
 
     fun sections():List<Section> {
-//        val regexString = "(?<!%)(%(\\d+)\\\$(dd|dm|dh|[ds]))"
         val placholderOrEscapedPercentRegex = Regex("%((\\d+)\\\$)?(%|dd|dm|dh|[ds])")
         val stringResourceWithPlaceholders = getStringResourceWithoutPerformingReplacements(stringResourceId)
         val zero = Pair(emptyList<Section>(), 0)

@@ -2,7 +2,7 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.*
 
-class StyledNodeBuilderImpl<T : NodeBuilderBasic<T>>(
+class StyledNodeBuilderImpl<T>(
     private val styledNodeFactory:StyledNodeFactory<T>,
     private val containerNodeFactory: ContainerNodeFactory<T>,
     private val styleReader: StyleReader,

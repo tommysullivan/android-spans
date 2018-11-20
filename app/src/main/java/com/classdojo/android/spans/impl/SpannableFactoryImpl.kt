@@ -3,7 +3,8 @@ package com.classdojo.android.spans.impl
 import com.classdojo.android.spans.interfaces.*
 
 class SpannableFactoryImpl(
-    spannableStringFactory: SpannableStringFactory
+    spannableStringFactory: SpannableStringFactory,
+    private val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
 ) : SpannableFactory, SpannableStringFactory by spannableStringFactory {
 
     override fun newTextNodeReader(text: String): NodeReaderBasic {
@@ -11,20 +12,25 @@ class SpannableFactoryImpl(
     }
 
     override fun newContainerNodeBuilder(childNodes: List<NodeReaderBasic>): NodeBuilderEnhanced {
-        val containerNodeBuilder = ContainerNodeBuilder(
-            this,
-            this,
-            childNodes,
-            newNodeReader(newContainerNodeReader(childNodes))
-        )
-        return NodeBuilderEnhancedImpl(
-            this,
-            this,
-            containerNodeBuilder
+        return newNodeBuilderEnhanced(
+            ContainerNodeBuilder<NodeBuilderEnhanced>(
+                this,
+                this,
+                childNodes,
+                newNodeReader(newContainerNodeReader(childNodes))
+            )
         )
     }
 
-    fun newNodeReader(nodeReaderBasic:NodeReaderBasic):NodeReader {
+    private fun newNodeBuilderEnhanced(nodeBuilderBasic: NodeBuilderBasic<NodeBuilderEnhanced>):NodeBuilderEnhanced {
+        return NodeBuilderEnhancedImpl(
+            NodeBuilderTextHelpersImpl(this, this, nodeBuilderBasic),
+            nodeBuilderBasic,
+            TranslatedTextBuilderImpl(this, nodeBuilderBasic, newStyleBuilder().build())
+        )
+    }
+
+    private fun newNodeReader(nodeReaderBasic:NodeReaderBasic):NodeReader {
         return NodeReaderImpl(
             SpannableStringReaderImpl(this, nodeReaderBasic),
             nodeReaderBasic
@@ -36,16 +42,13 @@ class SpannableFactoryImpl(
     }
 
     override fun newStyledNodeBuilder(styleReader: StyleReader, nodeToStyle: NodeReaderBasic): NodeBuilderEnhanced {
-        val styledNodeBuilder = StyledNodeBuilderImpl(
-            this,
-            this,
-            styleReader,
-            newNodeReader(newStyledNodeReader(styleReader, nodeToStyle))
-        )
-        return NodeBuilderEnhancedImpl(
-            this,
-            this,
-            styledNodeBuilder
+        return newNodeBuilderEnhanced(
+            StyledNodeBuilderImpl(
+                this,
+                this,
+                styleReader,
+                newNodeReader(newStyledNodeReader(styleReader, nodeToStyle))
+            )
         )
     }
 
@@ -65,7 +68,28 @@ class SpannableFactoryImpl(
         return StyleBuilderImpl(crappyAndroidStyleObjects, this)
     }
 
-    override fun newNodeBuilder():NodeBuilderEnhanced {
-        return newContainerNodeBuilder(emptyList())
+    override fun newTextNodeBuilder(): NodeBuilderEnhanced {
+        return newTextNodeBuilder("")
+    }
+
+    override fun newTextNodeBuilder(text: String): NodeBuilderEnhanced {
+        return newNodeBuilderEnhanced(
+            TextNodeBuilder<NodeBuilderEnhanced>(
+                this,
+                this,
+                newNodeReader(newTextNodeReader(text)),
+                this
+            )
+        )
+    }
+
+    override fun newTranslatedNode(stringResourceId: Int, vararg substitutions: NodeReaderBasic): NodeReaderBasic {
+        return TranslatedNode(
+            stringResourceId,
+            listOf(*substitutions),
+            getStringResourceWithoutPerformingReplacements,
+            this,
+            this
+        )
     }
 }
