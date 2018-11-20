@@ -71,4 +71,8 @@ class StyleBuilderImpl(
             48
         )
     }
+
+    override fun toString():String {
+        return "StyleBuilderImpl styleObjects=${styleObjects}"
+    }
 }

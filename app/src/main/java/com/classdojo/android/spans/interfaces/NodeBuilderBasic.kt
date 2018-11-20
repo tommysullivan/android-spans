@@ -6,7 +6,7 @@ interface NodeBuilderBasic<T : NodeBuilderBasic<T>> {
     fun addStyledSpan(styleReader: StyleReader, spanBuilder: NodeReaderBasic): T
 
     //TODO: Make build() return NodeReaderBasic or something that extends it
-    fun build(): NodeReaderBasic
+    fun build(): NodeReader
 }
 
 //interface Eq<F> {

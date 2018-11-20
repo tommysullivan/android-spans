@@ -6,7 +6,7 @@ class ContainerNodeBuilder<T : NodeBuilderBasic<T>>(
     private val styledNodeFactory: StyledNodeFactory<T>,
     private val containerNodeFactory: ContainerNodeFactory<T>,
     private val childNodeReaders: List<NodeReaderBasic>,
-    private val nodeReader: NodeReaderBasic
+    private val nodeReader: NodeReader
 ) : NodeBuilderBasic<T> {
     override fun addStyledSpan(styleReader: StyleReader, nodeReader: NodeReaderBasic): T {
         val newSpanBuilder = styledNodeFactory.newStyledNodeReader(
@@ -16,7 +16,7 @@ class ContainerNodeBuilder<T : NodeBuilderBasic<T>>(
         return containerNodeFactory.newContainerNodeBuilder(childNodeReaders + newSpanBuilder)
     }
 
-    override fun build(): NodeReaderBasic {
+    override fun build(): NodeReader {
         return nodeReader
     }
 }

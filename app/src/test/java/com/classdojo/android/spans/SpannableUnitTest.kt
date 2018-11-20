@@ -6,6 +6,7 @@ import com.classdojo.android.spans.interfaces.SpannableStringFactory
 import com.classdojo.android.spans.interfaces.StyleMarker
 import io.mockk.*
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 //TODO: Support %d, %dm, %dd, %dh - tough because we would need to retrieve subSpans as number and date objects (now we have only fullText())
@@ -33,9 +34,8 @@ class SpannableUnitTest {
 
         assertEquals("Tommy is red but not bluegreen text", span.fullText())
 
-        //TODO: Get spannablestring from node
-//        assertNotNull(span.asSpannableString())
-//        verify { mockSpannableString.setSpan(any(), 5, 12, any()) }
+        assertNotNull(span.asSpannableString())
+        verify { mockSpannableString.setSpan(any(), 5, 12, any()) }
     }
 
     @Test
@@ -53,6 +53,8 @@ class SpannableUnitTest {
         assertEquals("sfidhsiduhs", translatedNode.fullText())
         assertEquals(emptyList<StyleMarker>(), translatedNode.styleMarkersFromOutermostToInnermost())
     }
+
+    //TODO: Ensure test names (and class, method, factory names for that matter) are good before merge!
 
     @Test
     fun translatedStringWithTextAndStyleReplacements() {
@@ -76,6 +78,6 @@ class SpannableUnitTest {
         assertEquals(listOf("tom", "%1\$s", "mike", "%1\$s", "%2\$s", "myes", "%", "3\$s"), translatedNode.sections().map{s -> s.text})
 
         //TODO: Assert appropriate styles in the right places
-//        assertEquals(emptyList<StyleMarker>(), translatedNode.styleMarkersFromOutermostToInnermost())
+        assertEquals(emptyList<StyleMarker>(), translatedNode.styleMarkersFromOutermostToInnermost())
     }
 }

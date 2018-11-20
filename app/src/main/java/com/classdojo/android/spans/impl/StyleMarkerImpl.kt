@@ -17,4 +17,8 @@ class StyleMarkerImpl(
         return styleMarkerFactory.newStyleMarker(startIndex + amount, length, styleReader)
     }
 
+    override fun toString():String {
+        return "StyleMarkerImpl startIndex=${startIndex} length=${length} styleReader=${styleReader}"
+    }
+
 }

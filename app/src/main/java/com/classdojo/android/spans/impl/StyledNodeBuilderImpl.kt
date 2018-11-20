@@ -6,7 +6,7 @@ class StyledNodeBuilderImpl<T : NodeBuilderBasic<T>>(
     private val styledNodeFactory:StyledNodeFactory<T>,
     private val containerNodeFactory: ContainerNodeFactory<T>,
     private val styleReader: StyleReader,
-    private val nodeReader: NodeReaderBasic
+    private val nodeReader: NodeReader
 ) : NodeBuilderBasic<T> {
 
 //    TODO: This specialization would require that we track a styleBuilder and not just a styleReader
@@ -17,7 +17,7 @@ class StyledNodeBuilderImpl<T : NodeBuilderBasic<T>>(
 //        )
 //    }
 
-    override fun build(): NodeReaderBasic {
+    override fun build(): NodeReader {
         return nodeReader;
     }
 

@@ -11,8 +11,24 @@ class SpannableFactoryImpl(
     }
 
     override fun newContainerNodeBuilder(childNodes: List<NodeReaderBasic>): NodeBuilderEnhanced {
-        val containerNodeBuilder = ContainerNodeBuilder(this, this, childNodes, newContainerNodeReader(childNodes))
-        return NodeBuilderEnhancedImpl(this, this, containerNodeBuilder)
+        val containerNodeBuilder = ContainerNodeBuilder(
+            this,
+            this,
+            childNodes,
+            newNodeReader(newContainerNodeReader(childNodes))
+        )
+        return NodeBuilderEnhancedImpl(
+            this,
+            this,
+            containerNodeBuilder
+        )
+    }
+
+    fun newNodeReader(nodeReaderBasic:NodeReaderBasic):NodeReader {
+        return NodeReaderImpl(
+            SpannableStringReaderImpl(this, nodeReaderBasic),
+            nodeReaderBasic
+        )
     }
 
     override fun newContainerNodeReader(childNodes: List<NodeReaderBasic>): NodeReaderBasic {
@@ -20,8 +36,17 @@ class SpannableFactoryImpl(
     }
 
     override fun newStyledNodeBuilder(styleReader: StyleReader, nodeToStyle: NodeReaderBasic): NodeBuilderEnhanced {
-        val styledNodeBuilder = StyledNodeBuilderImpl(this, this, styleReader, newStyledNodeReader(styleReader, nodeToStyle))
-        return NodeBuilderEnhancedImpl(this, this, styledNodeBuilder)
+        val styledNodeBuilder = StyledNodeBuilderImpl(
+            this,
+            this,
+            styleReader,
+            newNodeReader(newStyledNodeReader(styleReader, nodeToStyle))
+        )
+        return NodeBuilderEnhancedImpl(
+            this,
+            this,
+            styledNodeBuilder
+        )
     }
 
     override fun newStyledNodeReader(styleReader: StyleReader, nodeToStyle: NodeReaderBasic): NodeReaderBasic {
