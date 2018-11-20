@@ -3,14 +3,13 @@ package com.classdojo.android.spans
 import com.classdojo.android.spans.impl.SpannableFactoryImpl
 import com.classdojo.android.spans.interfaces.SpannableString
 import com.classdojo.android.spans.interfaces.SpannableStringFactory
+import com.classdojo.android.spans.interfaces.StyleMarker
 import io.mockk.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test
 
-//TODO: Support %d, %dm, %dd, %dh - tough because we would need to retrieve subSpans as number and date objects (now we have only fullText())
 //TODO: DRY up these tests since we repeat nearly the same thing
-//TODO: Use get() fields for no-arg methods of the style and other interfaces
 class SpannableUnitTest {
     class MockSpannableStringFactory(private val mockSpannableString: SpannableString) : SpannableStringFactory {
         override fun newSpannableString(text: String):SpannableString = mockSpannableString
@@ -32,7 +31,6 @@ class SpannableUnitTest {
             .build()
 
         assertEquals("Tommy is red but not bluegreen text", span.fullText())
-
         assertNotNull(span.asSpannableString())
         verify { mockSpannableString.setSpan(any(), 5, 12, any()) }
     }
@@ -46,7 +44,7 @@ class SpannableUnitTest {
         val spannableFactory = SpannableFactoryImpl(mockSpannableStringFactory) { _ -> template }
         val translatedNode = spannableFactory.newTextNodeBuilder().addTranslatedText(1).build()
         assertEquals(template, translatedNode.fullText())
-//        assertEquals(emptyList<StyleMarker>(), translatedNode.styleMarkersFromOutermostToInnermost())
+        assertEquals(emptyList<StyleMarker>(), translatedNode.styleMarkersFromOutermostToInnermost())
     }
 
     @Test

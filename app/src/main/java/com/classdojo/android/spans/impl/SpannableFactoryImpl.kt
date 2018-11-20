@@ -26,7 +26,7 @@ class SpannableFactoryImpl(
         return NodeBuilderEnhancedImpl(
             NodeBuilderTextHelpersImpl(this, this, nodeBuilderBasic),
             nodeBuilderBasic,
-            TranslatedTextBuilderImpl(this, nodeBuilderBasic, newStyleBuilder().build()),
+            TranslatedTextBuilderImpl(this, nodeBuilderBasic),
             NodeBuilderImpl(nodeReader)
         )
     }

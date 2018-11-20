@@ -9,11 +9,13 @@ class ContainerNodeBuilder<T> (
 ) : NodeBuilderBasic<T>
 {
     override fun addStyledSpan(styleReader: StyleReader, nodeReader: NodeReaderBasic): T {
-        val newSpanBuilder = styledNodeFactory.newStyledNodeReader(
+        return addSubspan(styledNodeFactory.newStyledNodeReader(
             styleReader,
             nodeReader
-        )
-        return containerNodeFactory.newContainerNodeBuilder(childNodeReaders + newSpanBuilder)
+        ))
     }
 
+    override fun addSubspan(spanReader: NodeReaderBasic): T {
+        return containerNodeFactory.newContainerNodeBuilder(childNodeReaders + spanReader)
+    }
 }
