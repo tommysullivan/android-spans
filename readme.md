@@ -13,12 +13,9 @@ After cloning the repository to a development environment, development tasks can
 
 * Enhancements
 
-** Must
-TODO: Test clicking in CD
-
 ** Should
 TODO: Move the default SpannableStringFactory impl into SpannableFactoryImpl itself, make open class for test overrides
-TODO: Remove all the extra calls to `build()` by having NodeBuilderExtended implement NodeReader (instead of composing in NodeBuilder)
+TODO: Eliminate need for StyleBuilder.build() (just have StyleBuilder be a StyleReader)
 TODO: Rename all the types and methods to be more easily understood
 TODO: Use callbacks for subSections to take advantage of kotlin's "it" so they need not refer over and over to top level factories `spans` and `styles`
 TODO: Use get() fields for no-arg methods of the style and other interfaces

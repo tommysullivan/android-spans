@@ -2,8 +2,20 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.*
 
-//I want a class that behaves the way the old SpannableFactoryImpl did - IOW
-//it has all the same methods as SpannableFactory<NodeBuilderEnhanced>
+interface NodeBuilderEnhancedWithReader : NodeBuilderEnhanced<NodeBuilderEnhancedWithReader>, NodeReader
+open class SpannableFactoryImplWithReader(
+    val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
+) : SpannableFactoryImplT<NodeBuilderEnhancedWithReader>(getStringResourceWithoutPerformingReplacements)  {
+    override val factory = { b:NodeBuilderEnhanced<NodeBuilderEnhancedWithReader>, reader:NodeReader -> NodeBuilderEnhancedSelfImplWithReader(b, reader) }
+}
+
+class NodeBuilderEnhancedSelfImplWithReader(
+    base:NodeBuilderEnhanced<NodeBuilderEnhancedWithReader>,
+    reader:NodeReader
+) : NodeBuilderEnhancedWithReader,
+    NodeBuilderEnhanced<NodeBuilderEnhancedWithReader> by base,
+    NodeReader by reader
+
 
 interface NodeBuilderEnhancedSelf : NodeBuilderEnhanced<NodeBuilderEnhancedSelf>
 open class SpannableFactoryImpl(

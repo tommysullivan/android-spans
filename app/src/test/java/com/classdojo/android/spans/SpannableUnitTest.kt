@@ -1,6 +1,7 @@
 package com.classdojo.android.spans
 
 import com.classdojo.android.spans.impl.SpannableFactoryImpl
+import com.classdojo.android.spans.impl.SpannableFactoryImplWithReader
 import com.classdojo.android.spans.interfaces.SpannableString
 import com.classdojo.android.spans.interfaces.SpannableStringFactory
 import com.classdojo.android.spans.interfaces.StyleMarker
@@ -13,7 +14,7 @@ import org.junit.Test
 class SpannableFactoryImplTest(
     private val mockSpannableString:SpannableString,
     getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
-) : SpannableFactoryImpl(getStringResourceWithoutPerformingReplacements) {
+) : SpannableFactoryImplWithReader(getStringResourceWithoutPerformingReplacements) {
     override fun newSpannableString(text: String): SpannableString = mockSpannableString
 }
 
@@ -36,9 +37,8 @@ class SpannableUnitTest {
             .addText(" but not blue")
             .addStyledSpan(
                 styles.color().green().onClick{-> Unit}.build(),
-                spans.addText("green text").build()
+                spans.addText("green text")
             )
-            .build()
 
         assertEquals("Tommy is red but not bluegreen text", span.fullText())
         assertNotNull(span.asSpannableString())
@@ -51,7 +51,7 @@ class SpannableUnitTest {
         every { mockSpannableString.setSpan(any(), any(), any(), any()) } just Runs
         val template = "sfidhsiduhs"
         val spannableFactory = SpannableFactoryImplTest(mockSpannableString) { _ -> template }
-        val translatedNode = spannableFactory.newTextNodeBuilder().addTranslatedText(1).build()
+        val translatedNode = spannableFactory.newTextNodeBuilder().addTranslatedText(1)
         assertEquals(template, translatedNode.fullText())
         assertEquals(emptyList<StyleMarker>(), translatedNode.styleMarkersFromOutermostToInnermost())
     }
@@ -66,9 +66,9 @@ class SpannableUnitTest {
         val styles = spannableFactory.newStyleBuilder()
         val translatedNode = spans.addTranslatedText(
             1,
-            spans.addText(" swe").addText("nu ").build(),
-            spans.addStyledText(styles.color().red().build(), " flaenu ").build()
-        ).build()
+            spans.addText(" swe").addText("nu "),
+            spans.addStyledText(styles.color().red().build(), " flaenu ")
+        )
 
         assertEquals("tom swenu mike swenu  flaenu myes%3\$s", translatedNode.fullText())
 
