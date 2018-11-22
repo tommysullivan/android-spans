@@ -1,6 +1,5 @@
 package com.classdojo.android.spans
 
-import com.classdojo.android.spans.impl.SpannableFactoryImpl
 import com.classdojo.android.spans.impl.SpannableFactoryImplWithReader
 import com.classdojo.android.spans.interfaces.SpannableString
 import com.classdojo.android.spans.interfaces.SpannableStringFactory

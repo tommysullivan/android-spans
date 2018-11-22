@@ -17,19 +17,19 @@ class NodeBuilderEnhancedSelfImplWithReader(
     NodeReader by reader
 
 
-interface NodeBuilderEnhancedSelf : NodeBuilderEnhanced<NodeBuilderEnhancedSelf>
-open class SpannableFactoryImpl(
-    val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
-) : SpannableFactoryImplT<NodeBuilderEnhancedSelf>(getStringResourceWithoutPerformingReplacements)  {
-    override val factory = { b:NodeBuilderEnhanced<NodeBuilderEnhancedSelf>, _:NodeReader -> NodeBuilderEnhancedSelfImpl(b) }
-}
+//interface NodeBuilderEnhancedSelf : NodeBuilderEnhanced<NodeBuilderEnhancedSelf>
+//open class SpannableFactoryImpl(
+//    val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
+//) : SpannableFactoryImplT<NodeBuilderEnhancedSelf>(getStringResourceWithoutPerformingReplacements)  {
+//    override val factory = { b:NodeBuilderEnhanced<NodeBuilderEnhancedSelf>, _:NodeReader -> NodeBuilderEnhancedSelfImpl(b) }
+//}
+//
+//class NodeBuilderEnhancedSelfImpl(
+//    base:NodeBuilderEnhanced<NodeBuilderEnhancedSelf>
+//) : NodeBuilderEnhancedSelf,
+//    NodeBuilderEnhanced<NodeBuilderEnhancedSelf> by base
 
-class NodeBuilderEnhancedSelfImpl(
-    base:NodeBuilderEnhanced<NodeBuilderEnhancedSelf>
-) : NodeBuilderEnhancedSelf,
-    NodeBuilderEnhanced<NodeBuilderEnhancedSelf> by base
-
-abstract class SpannableFactoryImplT<T : NodeBuilderEnhanced<T>>(
+abstract class SpannableFactoryImplT<T>(
     private val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
 ) : SpannableFactory<T> {
     abstract val factory:(nodeBuilderEnhanced:NodeBuilderEnhanced<T>, nodeReader:NodeReader) -> T

@@ -2,7 +2,7 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.*
 
-class NodeBuilderEnhancedImpl<T : NodeBuilderEnhanced<T>>(
+class NodeBuilderEnhancedImpl<T>(
     nodeBuilderTextHelpers:NodeBuilderTextHelpers<T>,
     nodeBuilderBasic:NodeBuilderBasic<T>,
     translatedTextBuilder:TranslatedTextBuilder<T>,
