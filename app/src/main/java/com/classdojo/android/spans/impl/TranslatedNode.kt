@@ -3,12 +3,12 @@ package com.classdojo.android.spans.impl
 import android.support.annotation.StringRes
 import com.classdojo.android.spans.interfaces.*
 
-class TranslatedNode(
+class TranslatedNode<T>(
     @StringRes private val stringResourceId:Int,
     private val substitutions:List<NodeReaderBasic>,
     private val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String,
     private val textReaderFactory: TextNodeFactory,
-    private val containerFactory: ContainerNodeFactory<NodeBuilderEnhanced>
+    private val containerFactory: ContainerNodeFactory<T>
 ) : NodeReaderBasic {
 
     override fun fullText(): String {

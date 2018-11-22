@@ -1,11 +1,11 @@
 package com.classdojo.android.spans.interfaces
 
-interface SpannableFactory :
+interface SpannableFactory<T> :
     TextNodeFactory,
-    ContainerNodeFactory<NodeBuilderEnhanced>,
-    StyledNodeFactory<NodeBuilderEnhanced>,
+    ContainerNodeFactory<T>,
+    StyledNodeFactory<T>,
     StyleMarkerFactory,
     StyleBuilderFactory,
     SpannableStringFactory,
     TranslatedNodeFactory,
-    TextNodeBuilderFactory<NodeBuilderEnhanced>
+    TextNodeBuilderFactory<T>

@@ -2,18 +2,37 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.*
 
-class SpannableFactoryImpl(
-    spannableStringFactory: SpannableStringFactory,
+//I want a class that behaves the way the old SpannableFactoryImpl did - IOW
+//it has all the same methods as SpannableFactory<NodeBuilderEnhanced>
+
+interface NodeBuilderEnhancedSelf : NodeBuilderEnhanced<NodeBuilderEnhancedSelf>
+open class SpannableFactoryImpl(
+    val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
+) : SpannableFactoryImplT<NodeBuilderEnhancedSelf>(getStringResourceWithoutPerformingReplacements)  {
+    override val factory = { b:NodeBuilderEnhanced<NodeBuilderEnhancedSelf>, _:NodeReader -> NodeBuilderEnhancedSelfImpl(b) }
+}
+
+class NodeBuilderEnhancedSelfImpl(
+    base:NodeBuilderEnhanced<NodeBuilderEnhancedSelf>
+) : NodeBuilderEnhancedSelf,
+    NodeBuilderEnhanced<NodeBuilderEnhancedSelf> by base
+
+abstract class SpannableFactoryImplT<T : NodeBuilderEnhanced<T>>(
     private val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
-) : SpannableFactory, SpannableStringFactory by spannableStringFactory {
+) : SpannableFactory<T> {
+    abstract val factory:(nodeBuilderEnhanced:NodeBuilderEnhanced<T>, nodeReader:NodeReader) -> T
+
+    override fun newSpannableString(text: String): SpannableString {
+        return OurSpannableString(text)
+    }
 
     override fun newTextNodeReader(text: String): NodeReaderBasic {
         return TextNodeReader(text)
     }
 
-    override fun newContainerNodeBuilder(childNodes: List<NodeReaderBasic>): NodeBuilderEnhanced {
-        return newNodeBuilderEnhanced(
-            ContainerNodeBuilder<NodeBuilderEnhanced>(
+    override fun newContainerNodeBuilder(childNodes: List<NodeReaderBasic>): T {
+        return newT(
+            ContainerNodeBuilder<T>(
                 this,
                 this,
                 childNodes
@@ -22,14 +41,21 @@ class SpannableFactoryImpl(
         )
     }
 
-    private fun newNodeBuilderEnhanced(nodeBuilderBasic: NodeBuilderBasic<NodeBuilderEnhanced>, nodeReader:NodeReader):NodeBuilderEnhanced {
-        return NodeBuilderEnhancedImpl(
-            NodeBuilderTextHelpersImpl(this, this, nodeBuilderBasic),
+    private fun newT(nodeBuilderBasic: NodeBuilderBasic<T>, nodeReader:NodeReader):T {
+        return factory(newNodeBuilderEnhanced(nodeBuilderBasic, nodeReader), nodeReader)
+    }
+
+    private fun newNodeBuilderEnhanced(nodeBuilderBasic: NodeBuilderBasic<T>, nodeReader:NodeReader):NodeBuilderEnhanced<T> {
+        return NodeBuilderEnhancedImpl<T>(
+            newNodeBuilderTextHelpersImpl(nodeBuilderBasic),
             nodeBuilderBasic,
             TranslatedTextBuilderImpl(this, nodeBuilderBasic),
             NodeBuilderImpl(nodeReader)
         )
     }
+
+    private fun newNodeBuilderTextHelpersImpl(nodeBuilderBasic: NodeBuilderBasic<T>) =
+        NodeBuilderTextHelpersImpl(this, this, nodeBuilderBasic)
 
     private fun newNodeReader(nodeReaderBasic:NodeReaderBasic):NodeReader {
         return NodeReaderImpl(
@@ -42,8 +68,8 @@ class SpannableFactoryImpl(
         return ContainerNodeReaderImpl(childNodes)
     }
 
-    override fun newStyledNodeBuilder(styleReader: StyleReader, nodeToStyle: NodeReaderBasic): NodeBuilderEnhanced {
-        return newNodeBuilderEnhanced(
+    override fun newStyledNodeBuilder(styleReader: StyleReader, nodeToStyle: NodeReaderBasic): T {
+        return newT(
             StyledNodeBuilderImpl(
                 this,
                 this,
@@ -70,14 +96,14 @@ class SpannableFactoryImpl(
         return StyleBuilderImpl(crappyAndroidStyleObjects, this)
     }
 
-    override fun newTextNodeBuilder(): NodeBuilderEnhanced {
+    override fun newTextNodeBuilder(): T {
         return newTextNodeBuilder("")
     }
 
-    override fun newTextNodeBuilder(text: String): NodeBuilderEnhanced {
+    override fun newTextNodeBuilder(text: String): T {
         val textNodeReader = newNodeReader(newTextNodeReader(text))
-        return newNodeBuilderEnhanced(
-            TextNodeBuilder<NodeBuilderEnhanced>(
+        return newT(
+            TextNodeBuilder<T>(
                 this,
                 this,
                 textNodeReader
