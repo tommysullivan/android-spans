@@ -28,7 +28,7 @@ class SpannableUnitTest {
         val spansForTesting = SpansForTesting(mockSpannableString) { _ -> throw NotImplementedError() }
         val emptySpan = spansForTesting.newEmptySpan()
         val styles = spansForTesting.styles()
-        val span = emptySpan
+        val spanUnderTest = emptySpan
             .addText("Tommy")
             .addStyledText(styles.color().red(), " is red")
             .addText(" but not blue")
@@ -37,8 +37,8 @@ class SpannableUnitTest {
                 emptySpan.addText("green text")
             )
 
-        assertEquals("Tommy is red but not bluegreen text", span.fullText())
-        assertNotNull(span.asSpannableString())
+        assertEquals("Tommy is red but not bluegreen text", spanUnderTest.fullText())
+        assertNotNull(spanUnderTest.asSpannableString())
         verify { mockSpannableString.setSpan(any(), 5, 12, any()) }
     }
 
@@ -47,9 +47,9 @@ class SpannableUnitTest {
         val mockSpannableString = newMockSpannableString()
         val template = "sfidhsiduhs"
         val spansForTesting = SpansForTesting(mockSpannableString) { _ -> template }
-        val spanWithTranslatedText = spansForTesting.newEmptySpan().addTranslatedText(1)
-        assertEquals(template, spanWithTranslatedText.fullText())
-        assertEquals(emptyList<StyleMarker>(), spanWithTranslatedText.styleMarkersFromOutermostToInnermost())
+        val spanUnderTest = spansForTesting.newEmptySpan().addTranslatedText(1)
+        assertEquals(template, spanUnderTest.fullText())
+        assertEquals(emptyList<StyleMarker>(), spanUnderTest.styleMarkersFromOutermostToInnermost())
     }
 
     @Test
@@ -60,11 +60,11 @@ class SpannableUnitTest {
         val spansForTesting = SpansForTesting(mockSpannableString) { _ -> template }
         val emptySpan = spansForTesting.newEmptySpan()
         val styles = spansForTesting.styles()
-        val translatedNode = emptySpan.addTranslatedText(
+        val spanUnderTest = emptySpan.addTranslatedText(
             1,
             emptySpan.addText(" swe").addText("nu "),
             emptySpan.addStyledText(styles.color().red(), " flaenu ")
         )
-        assertEquals("tom swenu mike swenu  flaenu myes%3\$s", translatedNode.fullText())
+        assertEquals("tom swenu mike swenu  flaenu myes%3\$s", spanUnderTest.fullText())
     }
 }
