@@ -14,7 +14,6 @@ After cloning the repository to a development environment, development tasks can
 * Enhancements
 
 ** Should
-TODO: Eliminate need for StyleBuilder.build() (just have StyleBuilder be a StyleReader)
 TODO: Rename all the types and methods to be more easily understood
 TODO: Use callbacks for subSections to take advantage of kotlin's "it" so they need not refer over and over to top level factories `spans` and `styles`
 TODO: Use get() fields for no-arg methods of the style and other interfaces

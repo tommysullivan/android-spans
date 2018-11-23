@@ -16,19 +16,6 @@ class NodeBuilderEnhancedSelfImplWithReader(
     NodeBuilderEnhanced<NodeBuilderEnhancedWithReader> by base,
     NodeReader by reader
 
-
-//interface NodeBuilderEnhancedSelf : NodeBuilderEnhanced<NodeBuilderEnhancedSelf>
-//open class SpannableFactoryImpl(
-//    val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
-//) : SpannableFactoryImplT<NodeBuilderEnhancedSelf>(getStringResourceWithoutPerformingReplacements)  {
-//    override val factory = { b:NodeBuilderEnhanced<NodeBuilderEnhancedSelf>, _:NodeReader -> NodeBuilderEnhancedSelfImpl(b) }
-//}
-//
-//class NodeBuilderEnhancedSelfImpl(
-//    base:NodeBuilderEnhanced<NodeBuilderEnhancedSelf>
-//) : NodeBuilderEnhancedSelf,
-//    NodeBuilderEnhanced<NodeBuilderEnhancedSelf> by base
-
 abstract class SpannableFactoryImplT<T>(
     private val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
 ) : SpannableFactory<T> {
@@ -101,10 +88,18 @@ abstract class SpannableFactoryImplT<T>(
     }
 
     override fun newStyleBuilder(): StyleBuilder {
-        return newStyleBuilder(emptyList())
+        return newStyle()
     }
 
     override fun newStyleBuilder(crappyAndroidStyleObjects: List<Any>): StyleBuilder {
+        return newStyle(crappyAndroidStyleObjects)
+    }
+
+    override fun newStyle():Style {
+        return newStyle(emptyList())
+    }
+
+    fun newStyle(crappyAndroidStyleObjects: List<Any>):Style {
         return StyleBuilderImpl(crappyAndroidStyleObjects, this)
     }
 

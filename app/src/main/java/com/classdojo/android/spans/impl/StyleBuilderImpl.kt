@@ -7,15 +7,12 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.view.View
-import com.classdojo.android.spans.interfaces.SpannableString
-import com.classdojo.android.spans.interfaces.StyleBuilder
-import com.classdojo.android.spans.interfaces.StyleBuilderFactory
-import com.classdojo.android.spans.interfaces.StyleReader
+import com.classdojo.android.spans.interfaces.*
 
 class StyleBuilderImpl(
     private val styleObjects: List<Any>,
     private val styleBuilderFactory: StyleBuilderFactory
-) : StyleBuilder, StyleReader {
+) : StyleBuilder, StyleReader, Style {
 
     override fun color(): StyleBuilder.Color {
         return ColorImpl { color: Int -> this.color(color) }
@@ -52,10 +49,6 @@ class StyleBuilderImpl(
             1.5f,
             2.0f
         )
-    }
-
-    override fun build(): StyleReader {
-        return this
     }
 
     override fun applyStyleToSpannable(

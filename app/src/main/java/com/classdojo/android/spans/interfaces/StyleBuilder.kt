@@ -3,7 +3,7 @@ package com.classdojo.android.spans.interfaces
 import android.support.annotation.ColorInt
 import android.support.annotation.FloatRange
 
-interface StyleBuilder {
+interface StyleBuilder : StyleReader {
     fun color(): Color
     fun color(@ColorInt color: Int?): StyleBuilder
 
@@ -31,6 +31,4 @@ interface StyleBuilder {
     }
 
     fun onClick(clickHandler:() -> Unit):StyleBuilder
-
-    fun build(): StyleReader
 }

@@ -29,13 +29,13 @@ class SpannableUnitTest {
         every { mockSpannableString.setSpan(any(), any(), any(), any()) } just Runs
         val spannableFactory = SpannableFactoryImplTest(mockSpannableString) { _ -> throw NotImplementedError() }
         val spans = spannableFactory.newTextNodeBuilder()
-        val styles = spannableFactory.newStyleBuilder()
+        val styles = spannableFactory.newStyle()
         val span = spans
             .addText("Tommy")
-            .addStyledText(styles.color().red().build(), " is red")
+            .addStyledText(styles.color().red(), " is red")
             .addText(" but not blue")
             .addStyledSpan(
-                styles.color().green().onClick{-> Unit}.build(),
+                styles.color().green().onClick{-> Unit},
                 spans.addText("green text")
             )
 
@@ -66,7 +66,7 @@ class SpannableUnitTest {
         val translatedNode = spans.addTranslatedText(
             1,
             spans.addText(" swe").addText("nu "),
-            spans.addStyledText(styles.color().red().build(), " flaenu ")
+            spans.addStyledText(styles.color().red(), " flaenu ")
         )
 
         assertEquals("tom swenu mike swenu  flaenu myes%3\$s", translatedNode.fullText())
