@@ -113,7 +113,7 @@ abstract class SpansImplT<T>(
     }
 
     override fun newTranslatedStyledTextReader(stringResourceIdOfTranslationWithPossiblePlacholders: Int, vararg styledTextToSubstituteInForPlaceholders: StyledTextReader): StyledTextReader {
-        return TranslatedNode(
+        return StyledTextReaderThatPerformsTranslationsAndReplacementsDynamically(
             stringResourceIdOfTranslationWithPossiblePlacholders,
             listOf(*styledTextToSubstituteInForPlaceholders),
             getStringResourceWithoutPerformingReplacements,

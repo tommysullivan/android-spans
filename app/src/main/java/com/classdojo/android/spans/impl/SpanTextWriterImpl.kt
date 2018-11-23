@@ -4,15 +4,15 @@ import com.classdojo.android.spans.interfaces.*
 
 class SpanTextWriterImpl<T>(
     private val stylesFactory: StylesFactory,
-    private val textNodeReaderFactory: TextNodeFactory,
+    private val styledTextReaderFactoryForPlainText: StyledTextReaderFactoryForPlainText,
     private val subspanContainer: SubspanContainer<T>
 ) : SpanTextWriter<T>
 {
     override fun addText(text: String): T {
-        return subspanContainer.addSubspan(textNodeReaderFactory.newTextNodeReader(text))
+        return subspanContainer.addSubspan(styledTextReaderFactoryForPlainText.newTextNodeReader(text))
     }
 
     override fun addStyledText(styleReader: StyleReader, text: String): T {
-        return subspanContainer.addStyledSpan(styleReader, textNodeReaderFactory.newTextNodeReader(text))
+        return subspanContainer.addStyledSpan(styleReader, styledTextReaderFactoryForPlainText.newTextNodeReader(text))
     }
 }

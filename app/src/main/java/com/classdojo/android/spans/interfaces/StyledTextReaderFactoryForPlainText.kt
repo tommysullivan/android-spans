@@ -1,5 +1,5 @@
 package com.classdojo.android.spans.interfaces
 
-interface TextNodeFactory {
+interface StyledTextReaderFactoryForPlainText {
     fun newTextNodeReader(text: String): StyledTextReader
 }

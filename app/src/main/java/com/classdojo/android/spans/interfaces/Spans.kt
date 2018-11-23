@@ -1,7 +1,7 @@
 package com.classdojo.android.spans.interfaces
 
 interface Spans<T> :
-    TextNodeFactory,
+    StyledTextReaderFactoryForPlainText,
     CombinesTextReaderSequences<T>,
     StyledNodeFactory<T>,
     StyleMarkerFactory,
