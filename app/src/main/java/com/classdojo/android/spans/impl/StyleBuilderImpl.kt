@@ -11,8 +11,8 @@ import com.classdojo.android.spans.interfaces.*
 
 class StyleBuilderImpl(
     private val styleObjects: List<Any>,
-    private val styleBuilderFactory: StyleBuilderFactory
-) : StyleBuilder, StyleReader, Style {
+    private val stylesFactory: StylesFactory
+) : StyleBuilder, StyleReader, Styles {
 
     override fun color(): StyleBuilder.Color {
         return ColorImpl { color: Int -> this.color(color) }
@@ -37,7 +37,7 @@ class StyleBuilderImpl(
     }
 
     private fun newStyleBuilderWithAdditionalStyle(additionalStyle: Any): StyleBuilder {
-        return styleBuilderFactory.newStyleBuilder(styleObjects + additionalStyle)
+        return stylesFactory.styleBuilder(styleObjects + additionalStyle)
     }
 
     override fun sizeRelative(): StyleBuilder.Size {

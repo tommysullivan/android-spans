@@ -2,10 +2,10 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.*
 
-class SpannableStringReaderImpl(
+class ConvertibleToSpannableStringImpl(
     private val spannableStringFactory: SpannableStringFactory,
-    private val nodeReaderBasic: NodeReaderBasic
-) : SpannableStringReader
+    private val nodeReaderBasic: StyledTextReader
+) : ConvertibleToSpannableString
 {
     override fun asSpannableString(): SpannableString {
         val spannableString = spannableStringFactory.newSpannableString(nodeReaderBasic.fullText())

@@ -2,104 +2,97 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.*
 
-interface NodeBuilderEnhancedWithReader : NodeBuilderEnhanced<NodeBuilderEnhancedWithReader>, NodeReader
-open class SpannableFactoryImplWithReader(
+//TODO: Combine the factories into a single open factory
+open class SpansImplWithReader(
     val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
-) : SpannableFactoryImplT<NodeBuilderEnhancedWithReader>(getStringResourceWithoutPerformingReplacements)  {
-    override val factory = { b:NodeBuilderEnhanced<NodeBuilderEnhancedWithReader>, reader:NodeReader -> NodeBuilderEnhancedSelfImplWithReader(b, reader) }
+) : SpansImplT<Span>(getStringResourceWithoutPerformingReplacements)  {
+    override val factory = { b:SpanWriter<Span>, reader:SpanReader -> SpanImpl(b, reader) }
 }
 
-class NodeBuilderEnhancedSelfImplWithReader(
-    base:NodeBuilderEnhanced<NodeBuilderEnhancedWithReader>,
-    reader:NodeReader
-) : NodeBuilderEnhancedWithReader,
-    NodeBuilderEnhanced<NodeBuilderEnhancedWithReader> by base,
-    NodeReader by reader
-
-abstract class SpannableFactoryImplT<T>(
+abstract class SpansImplT<T>(
     private val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
-) : SpannableFactory<T> {
-    abstract val factory:(nodeBuilderEnhanced:NodeBuilderEnhanced<T>, nodeReader:NodeReader) -> T
+) : Spans<T> {
+    abstract val factory:(spanBuilder:SpanWriter<T>, spanReader:SpanReader) -> T
 
     override fun newSpannableString(text: String): SpannableString {
         return OurSpannableString(text)
     }
 
-    override fun newTextNodeReader(text: String): NodeReaderBasic {
-        return TextNodeReader(text)
+    override fun newTextNodeReader(text: String): StyledTextReader {
+        return StyledTextReaderImpl(text)
     }
 
-    override fun newContainerNodeBuilder(childNodes: List<NodeReaderBasic>): T {
+    override fun newSpanSequenceBuilder(sequenceOfStyledTextReadersToBuildUpon: List<StyledTextReader>): T {
         return newT(
             ContainerNodeBuilder<T>(
                 this,
                 this,
-                childNodes
+                sequenceOfStyledTextReadersToBuildUpon
             ),
-            newNodeReader(newContainerNodeReader(childNodes))
+            newNodeReader(newStyledTextReaderFromSequence(sequenceOfStyledTextReadersToBuildUpon))
         )
     }
 
-    private fun newT(nodeBuilderBasic: NodeBuilderBasic<T>, nodeReader:NodeReader):T {
-        return factory(newNodeBuilderEnhanced(nodeBuilderBasic, nodeReader), nodeReader)
+    private fun newT(subspanContainer: SubspanContainer<T>, spanReader:SpanReader):T {
+        return factory(newNodeBuilderEnhanced(subspanContainer, spanReader), spanReader)
     }
 
-    private fun newNodeBuilderEnhanced(nodeBuilderBasic: NodeBuilderBasic<T>, nodeReader:NodeReader):NodeBuilderEnhanced<T> {
-        return NodeBuilderEnhancedImpl<T>(
-            newNodeBuilderTextHelpersImpl(nodeBuilderBasic),
-            nodeBuilderBasic,
-            TranslatedTextBuilderImpl(this, nodeBuilderBasic),
-            NodeBuilderImpl(nodeReader)
+    private fun newNodeBuilderEnhanced(subspanContainer: SubspanContainer<T>, spanReader:SpanReader):SpanWriter<T> {
+        return SpanWriterImpl<T>(
+            newNodeBuilderTextHelpersImpl(subspanContainer),
+            subspanContainer,
+            TranslatedTextWriterImpl(this, subspanContainer),
+            ConvertibleToReadOnlySpanImpl(spanReader)
         )
     }
 
-    private fun newNodeBuilderTextHelpersImpl(nodeBuilderBasic: NodeBuilderBasic<T>) =
-        NodeBuilderTextHelpersImpl(this, this, nodeBuilderBasic)
+    private fun newNodeBuilderTextHelpersImpl(subspanContainer: SubspanContainer<T>) =
+        SpanTextWriterImpl(this, this, subspanContainer)
 
-    private fun newNodeReader(nodeReaderBasic:NodeReaderBasic):NodeReader {
-        return NodeReaderImpl(
-            SpannableStringReaderImpl(this, nodeReaderBasic),
+    private fun newNodeReader(nodeReaderBasic:StyledTextReader):SpanReader {
+        return SpanReaderImpl(
+            ConvertibleToSpannableStringImpl(this, nodeReaderBasic),
             nodeReaderBasic
         )
     }
 
-    override fun newContainerNodeReader(childNodes: List<NodeReaderBasic>): NodeReaderBasic {
-        return ContainerNodeReaderImpl(childNodes)
+    override fun newStyledTextReaderFromSequence(sequenceOfStyledTextReadersToGroupIntoSingleReader: List<StyledTextReader>): StyledTextReader {
+        return ContainerNodeReaderImpl(sequenceOfStyledTextReadersToGroupIntoSingleReader)
     }
 
-    override fun newStyledNodeBuilder(styleReader: StyleReader, nodeToStyle: NodeReaderBasic): T {
+    override fun newStyledNodeBuilder(styleReader: StyleReader, styledTextReaderToStyleFurther: StyledTextReader): T {
         return newT(
             StyledNodeBuilderImpl(
                 this,
                 this,
                 styleReader,
-                nodeToStyle
+                styledTextReaderToStyleFurther
             ),
-            newNodeReader(newStyledNodeReader(styleReader, nodeToStyle))
+            newNodeReader(newStyledNodeReader(styleReader, styledTextReaderToStyleFurther))
         )
     }
 
-    override fun newStyledNodeReader(styleReader: StyleReader, nodeToStyle: NodeReaderBasic): NodeReaderBasic {
-        return StyledNodeReaderImpl(this, nodeToStyle, styleReader)
+    override fun newStyledNodeReader(styleReader: StyleReader, styledTextReaderToStyleFurther: StyledTextReader): StyledTextReader {
+        return StyledNodeReaderImpl(this, styledTextReaderToStyleFurther, styleReader)
     }
 
     override fun newStyleMarker(startIndex: Int, length: Int, styleBuilder: StyleReader): StyleMarker {
         return StyleMarkerImpl(startIndex, length, styleBuilder, this)
     }
 
-    override fun newStyleBuilder(): StyleBuilder {
-        return newStyle()
+    override fun styleBuilder(): StyleBuilder {
+        return styles()
     }
 
-    override fun newStyleBuilder(crappyAndroidStyleObjects: List<Any>): StyleBuilder {
+    override fun styleBuilder(crappyAndroidStyleObjects: List<Any>): StyleBuilder {
         return newStyle(crappyAndroidStyleObjects)
     }
 
-    override fun newStyle():Style {
+    override fun styles():Styles {
         return newStyle(emptyList())
     }
 
-    fun newStyle(crappyAndroidStyleObjects: List<Any>):Style {
+    fun newStyle(crappyAndroidStyleObjects: List<Any>):Styles {
         return StyleBuilderImpl(crappyAndroidStyleObjects, this)
     }
 
@@ -119,10 +112,10 @@ abstract class SpannableFactoryImplT<T>(
         )
     }
 
-    override fun newTranslatedNode(stringResourceId: Int, vararg substitutions: NodeReaderBasic): NodeReaderBasic {
+    override fun newTranslatedStyledTextReader(stringResourceIdOfTranslationWithPossiblePlacholders: Int, vararg styledTextToSubstituteInForPlaceholders: StyledTextReader): StyledTextReader {
         return TranslatedNode(
-            stringResourceId,
-            listOf(*substitutions),
+            stringResourceIdOfTranslationWithPossiblePlacholders,
+            listOf(*styledTextToSubstituteInForPlaceholders),
             getStringResourceWithoutPerformingReplacements,
             this,
             this

@@ -1,5 +1,5 @@
 package com.classdojo.android.spans.interfaces
 
-interface SpannableStringReader {
+interface ConvertibleToSpannableString {
     fun asSpannableString(): SpannableString
 }

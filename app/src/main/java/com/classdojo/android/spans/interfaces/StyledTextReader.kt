@@ -1,6 +1,6 @@
 package com.classdojo.android.spans.interfaces
 
-interface NodeReaderBasic {
+interface StyledTextReader {
     fun fullText(): String
     fun styleMarkersFromOutermostToInnermost(): List<StyleMarker>
 }

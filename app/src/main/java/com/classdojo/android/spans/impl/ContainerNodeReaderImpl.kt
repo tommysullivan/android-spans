@@ -1,11 +1,11 @@
 package com.classdojo.android.spans.impl
 
-import com.classdojo.android.spans.interfaces.NodeReaderBasic
+import com.classdojo.android.spans.interfaces.StyledTextReader
 import com.classdojo.android.spans.interfaces.StyleMarker
 
 class ContainerNodeReaderImpl (
-    private val childNodeBuilders: List<NodeReaderBasic>
-) : NodeReaderBasic {
+    private val childNodeBuilders: List<StyledTextReader>
+) : StyledTextReader {
     override fun fullText(): String {
         return childNodeBuilders.map{ c -> c.fullText() }.joinToString("")
     }

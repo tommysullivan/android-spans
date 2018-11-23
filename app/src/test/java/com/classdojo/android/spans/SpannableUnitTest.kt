@@ -1,6 +1,6 @@
 package com.classdojo.android.spans
 
-import com.classdojo.android.spans.impl.SpannableFactoryImplWithReader
+import com.classdojo.android.spans.impl.SpansImplWithReader
 import com.classdojo.android.spans.interfaces.SpannableString
 import com.classdojo.android.spans.interfaces.SpannableStringFactory
 import com.classdojo.android.spans.interfaces.StyleMarker
@@ -10,10 +10,10 @@ import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 //TODO: Is there an anonymous way to do this? how about via MockK?
-class SpannableFactoryImplTest(
+class SpansImplTest(
     private val mockSpannableString:SpannableString,
     getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
-) : SpannableFactoryImplWithReader(getStringResourceWithoutPerformingReplacements) {
+) : SpansImplWithReader(getStringResourceWithoutPerformingReplacements) {
     override fun newSpannableString(text: String): SpannableString = mockSpannableString
 }
 
@@ -27,9 +27,9 @@ class SpannableUnitTest {
     fun spannableBasicTestCase() {
         val mockSpannableString = mockk<SpannableString>()
         every { mockSpannableString.setSpan(any(), any(), any(), any()) } just Runs
-        val spannableFactory = SpannableFactoryImplTest(mockSpannableString) { _ -> throw NotImplementedError() }
+        val spannableFactory = SpansImplTest(mockSpannableString) { _ -> throw NotImplementedError() }
         val spans = spannableFactory.newTextNodeBuilder()
-        val styles = spannableFactory.newStyle()
+        val styles = spannableFactory.styles()
         val span = spans
             .addText("Tommy")
             .addStyledText(styles.color().red(), " is red")
@@ -49,7 +49,7 @@ class SpannableUnitTest {
         val mockSpannableString = mockk<SpannableString>()
         every { mockSpannableString.setSpan(any(), any(), any(), any()) } just Runs
         val template = "sfidhsiduhs"
-        val spannableFactory = SpannableFactoryImplTest(mockSpannableString) { _ -> template }
+        val spannableFactory = SpansImplTest(mockSpannableString) { _ -> template }
         val translatedNode = spannableFactory.newTextNodeBuilder().addTranslatedText(1)
         assertEquals(template, translatedNode.fullText())
         assertEquals(emptyList<StyleMarker>(), translatedNode.styleMarkersFromOutermostToInnermost())
@@ -60,9 +60,9 @@ class SpannableUnitTest {
         val mockSpannableString = mockk<SpannableString>()
         every { mockSpannableString.setSpan(any(), any(), any(), any()) } just Runs
         val template = "tom%1\$smike%1\$s%2\$smyes%%3\$s"
-        val spannableFactory = SpannableFactoryImplTest(mockSpannableString) { _ -> template }
+        val spannableFactory = SpansImplTest(mockSpannableString) { _ -> template }
         val spans = spannableFactory.newTextNodeBuilder()
-        val styles = spannableFactory.newStyleBuilder()
+        val styles = spannableFactory.styleBuilder()
         val translatedNode = spans.addTranslatedText(
             1,
             spans.addText(" swe").addText("nu "),
@@ -72,7 +72,7 @@ class SpannableUnitTest {
         assertEquals("tom swenu mike swenu  flaenu myes%3\$s", translatedNode.fullText())
 
         //TODO: This could be a unit test of TranslatedNode
-//        assertEquals(listOf("tom", "%1\$s", "mike", "%1\$s", "%2\$s", "myes", "%", "3\$s"), translatedNode.sections().map{s -> s.text})
+//        assertEquals(listOf("tom", "%1\$s", "mike", "%1\$s", "%2\$s", "myes", "%", "3\$s"), translatedNode.literalsAndPlaceholdersInOrder().map{s -> s.text})
 
         //TODO: Assert appropriate styles in the right places
 //        assertEquals(emptyList<StyleMarker>(), translatedNode.styleMarkersFromOutermostToInnermost())

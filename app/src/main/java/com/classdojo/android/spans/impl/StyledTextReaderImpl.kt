@@ -1,9 +1,9 @@
 package com.classdojo.android.spans.impl
 
-import com.classdojo.android.spans.interfaces.NodeReaderBasic
+import com.classdojo.android.spans.interfaces.StyledTextReader
 import com.classdojo.android.spans.interfaces.StyleMarker
 
-class TextNodeReader(private val text: String) : NodeReaderBasic {
+class StyledTextReaderImpl(private val text: String) : StyledTextReader {
     override fun fullText(): String {
         return text
     }

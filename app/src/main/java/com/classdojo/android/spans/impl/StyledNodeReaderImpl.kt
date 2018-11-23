@@ -4,9 +4,9 @@ import com.classdojo.android.spans.interfaces.*
 
 class StyledNodeReaderImpl (
     private val styleMarkerFactory: StyleMarkerFactory,
-    private val styledNode: NodeReaderBasic,
+    private val styledNode: StyledTextReader,
     private val styleReader: StyleReader
-) : NodeReaderBasic {
+) : StyledTextReader {
     override fun fullText(): String {
         return styledNode.fullText()
     }

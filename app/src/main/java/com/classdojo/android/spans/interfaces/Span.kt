@@ -1,3 +1,3 @@
 package com.classdojo.android.spans.interfaces
 
-interface Style : StyleBuilder, StyleReader
+interface Span : SpanWriter<Span>, SpanReader

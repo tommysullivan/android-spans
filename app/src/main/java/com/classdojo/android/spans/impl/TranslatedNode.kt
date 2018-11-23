@@ -4,91 +4,96 @@ import android.support.annotation.StringRes
 import com.classdojo.android.spans.interfaces.*
 
 class TranslatedNode<T>(
-    @StringRes private val stringResourceId:Int,
-    private val substitutions:List<NodeReaderBasic>,
+    @StringRes private val stringResourceIdOfTranslationWithPossiblePlacholders:Int,
+    private val styledTextToSubstituteInForPlaceholders:List<StyledTextReader>,
     private val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String,
     private val textReaderFactory: TextNodeFactory,
-    private val containerFactory: ContainerNodeFactory<T>
-) : NodeReaderBasic {
+    private val combinesTextReaderSequences: CombinesTextReaderSequences<T>
+) : StyledTextReader {
 
     override fun fullText(): String {
-        return containerNode().fullText()
+        return styledTextReaderEncapsulatingSequenceOfLiteralsAndPlaceholders().fullText()
     }
 
     override fun styleMarkersFromOutermostToInnermost(): List<StyleMarker> {
-        return containerNode().styleMarkersFromOutermostToInnermost()
+        return styledTextReaderEncapsulatingSequenceOfLiteralsAndPlaceholders().styleMarkersFromOutermostToInnermost()
     }
 
-    fun containerNode():NodeReaderBasic {
-        return containerFactory.newContainerNodeReader(
-            sections().map{section ->
-                if(section.isPlainText) textReaderFactory.newTextNodeReader(section.text)
+    fun styledTextReaderEncapsulatingSequenceOfLiteralsAndPlaceholders():StyledTextReader {
+        return combinesTextReaderSequences.newStyledTextReaderFromSequence(
+            literalsAndPlaceholdersInOrder().map{ literalOrPlaceholderSubstring ->
+                if(literalOrPlaceholderSubstring.isLiteralString) textReaderFactory.newTextNodeReader(literalOrPlaceholderSubstring.text)
                 else StringFormattedNode(
-                    section.text,
-                    substitutions,
-                    section.replacementIndex!!
+                    literalOrPlaceholderSubstring.text,
+                    styledTextToSubstituteInForPlaceholders,
+                    literalOrPlaceholderSubstring.zeroBasedIndexOfReplacement!!
                 )
             }
         )
     }
 
-    class Section(public val isPlainText:Boolean, public val text:String, public val replacementIndex:Int?) {}
+    class LiteralOrPlaceholderString(public val isLiteralString:Boolean, val text:String, val zeroBasedIndexOfReplacement:Int?) {}
 
-    fun sections():List<Section> {
-        val placholderOrEscapedPercentRegex = Regex("%((\\d+)\\\$)?(%|dd|dm|dh|[ds])")
-        val stringResourceWithPlaceholders = getStringResourceWithoutPerformingReplacements(stringResourceId)
-        val zero = Pair(emptyList<Section>(), 0)
-        val parts = placholderOrEscapedPercentRegex
-            .findAll(stringResourceWithPlaceholders)
-            .fold(zero) { soFar, current ->
-                foldMatchesIntoAllStringSections(current, soFar, stringResourceWithPlaceholders)
+    fun literalsAndPlaceholdersInOrder():List<LiteralOrPlaceholderString> {
+        val regexThatMatchesPlaceholderTokensAndDoublePercentSigns = Regex("%((\\d+)\\\$)?(%|dd|dm|dh|[ds])")
+        val stringResourceWithUnreplacedPlaceholders = getStringResourceWithoutPerformingReplacements(stringResourceIdOfTranslationWithPossiblePlacholders)
+        val literalsAndPlaceholdersListWithIndexOfEndOfLastMatch = regexThatMatchesPlaceholderTokensAndDoublePercentSigns
+            .findAll(stringResourceWithUnreplacedPlaceholders)
+            .fold(Pair(emptyList<LiteralOrPlaceholderString>(), 0)) {
+                literalsAndPlaceholdersSoFar, currentRegexMatch -> (
+                    appendLiteralAndOrPlaceholderBasedOnMatchAndMoveIndexFurtherAlong(
+                        currentRegexMatch,
+                        literalsAndPlaceholdersSoFar,
+                        stringResourceWithUnreplacedPlaceholders
+                    )
+                )
             }
 
-        val startIndexOfLastPlainTextSection = parts.second
-        val allSectionsExceptPossibleLastTextSection = parts.first
-        val atEndOfString = startIndexOfLastPlainTextSection == stringResourceWithPlaceholders.lastIndex
-        val allSections = if(atEndOfString)
-            allSectionsExceptPossibleLastTextSection
+        val literalsAndPlaceholdersWithLastSectionPossiblyMissing = literalsAndPlaceholdersListWithIndexOfEndOfLastMatch.first
+        val indexOfEndOfLastMatch = literalsAndPlaceholdersListWithIndexOfEndOfLastMatch.second
+        val atEndOfString = indexOfEndOfLastMatch == stringResourceWithUnreplacedPlaceholders.lastIndex
+        val allLiteralsAndPlaceholders = if(atEndOfString)
+            literalsAndPlaceholdersWithLastSectionPossiblyMissing
         else {
-            val lastPlainTextSection = Section(
+            val lastPlainTextSection = LiteralOrPlaceholderString(
                 true,
-                stringResourceWithPlaceholders.substring(startIndexOfLastPlainTextSection),
+                stringResourceWithUnreplacedPlaceholders.substring(indexOfEndOfLastMatch),
                 -1
             )
-            allSectionsExceptPossibleLastTextSection + lastPlainTextSection
+            literalsAndPlaceholdersWithLastSectionPossiblyMissing + lastPlainTextSection
         }
 
-        return allSections
+        return allLiteralsAndPlaceholders
     }
 
-    private fun foldMatchesIntoAllStringSections(
-        currentMatch: MatchResult,
-        soFar: Pair<List<Section>, Int>,
-        template: String
-    ): Pair<List<Section>, Int> {
-        val newIndex = currentMatch.range.endInclusive + 1
-        val currentStartIndex = currentMatch.range.start
-        val currentSection = getCurrentSection(currentMatch)
-        val startIndexOfLastPlainTextSection = soFar.second
+    private fun appendLiteralAndOrPlaceholderBasedOnMatchAndMoveIndexFurtherAlong(
+        currentRegexMatch: MatchResult,
+        literalsAndPlaceholdersSoFar: Pair<List<LiteralOrPlaceholderString>, Int>,
+        stringResourceWithUnreplacedPlaceholders: String
+    ): Pair<List<LiteralOrPlaceholderString>, Int> {
+        val newIndex = currentRegexMatch.range.endInclusive + 1
+        val currentStartIndex = currentRegexMatch.range.start
+        val currentSection = getCurrentSection(currentRegexMatch)
+        val startIndexOfLastPlainTextSection = literalsAndPlaceholdersSoFar.second
         val needToAppendPrecedingPlainTextBeforeCurrentSection = currentStartIndex != startIndexOfLastPlainTextSection
         val newlyCompletedSections = if (needToAppendPrecedingPlainTextBeforeCurrentSection) {
-            val textPrecedingCurrentMatch = template.substring(soFar.second, currentStartIndex)
-            val sectionOfTextPrecedingCurrentMatch = Section(
+            val textPrecedingCurrentMatch = stringResourceWithUnreplacedPlaceholders.substring(literalsAndPlaceholdersSoFar.second, currentStartIndex)
+            val sectionOfTextPrecedingCurrentMatch = LiteralOrPlaceholderString(
                 true,
                 textPrecedingCurrentMatch,
                 -1
             )
             listOf(sectionOfTextPrecedingCurrentMatch, currentSection)
         } else listOf(currentSection)
-        return Pair(soFar.first + newlyCompletedSections, newIndex)
+        return Pair(literalsAndPlaceholdersSoFar.first + newlyCompletedSections, newIndex)
     }
 
-    private fun getCurrentSection(currentMatch: MatchResult): Section {
+    private fun getCurrentSection(currentMatch: MatchResult): LiteralOrPlaceholderString {
         return if (currentMatch.value == "%%") {
-            Section(true, "%", -1)
+            LiteralOrPlaceholderString(true, "%", -1)
         } else {
             val replacementIndex = currentMatch.groupValues[2].toInt() - 1
-            Section(false, currentMatch.value, replacementIndex)
+            LiteralOrPlaceholderString(false, currentMatch.value, replacementIndex)
         }
     }
 }
