@@ -1,6 +1,9 @@
 package com.classdojo.android.spans.impl
 
-import com.classdojo.android.spans.interfaces.*
+import com.classdojo.android.spans.interfaces.StyleMarker
+import com.classdojo.android.spans.interfaces.StyleMarkerFactory
+import com.classdojo.android.spans.interfaces.StyleReader
+import com.classdojo.android.spans.interfaces.StyledTextReader
 
 class StyledNodeReaderImpl (
     private val styleMarkerFactory: StyleMarkerFactory,

@@ -1,7 +1,10 @@
 package com.classdojo.android.spans.impl
 
 import android.support.annotation.StringRes
-import com.classdojo.android.spans.interfaces.*
+import com.classdojo.android.spans.interfaces.CombinesTextReaderSequences
+import com.classdojo.android.spans.interfaces.StyleMarker
+import com.classdojo.android.spans.interfaces.StyledTextReader
+import com.classdojo.android.spans.interfaces.StyledTextReaderFactoryForPlainText
 
 class LazilyTranslatedAndReplacedTextReader<TypeToReturnForChainedOperations>(
     @StringRes private val stringResourceIdOfTranslationWithPossiblePlacholders:Int,

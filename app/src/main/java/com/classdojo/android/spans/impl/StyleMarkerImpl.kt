@@ -1,6 +1,9 @@
 package com.classdojo.android.spans.impl
 
-import com.classdojo.android.spans.interfaces.*
+import com.classdojo.android.spans.interfaces.SpannableString
+import com.classdojo.android.spans.interfaces.StyleMarker
+import com.classdojo.android.spans.interfaces.StyleMarkerFactory
+import com.classdojo.android.spans.interfaces.StyleReader
 
 class StyleMarkerImpl(
     private val startIndex: Int,

@@ -1,7 +1,7 @@
 package com.classdojo.android.spans.impl
 
-import com.classdojo.android.spans.interfaces.StyledTextReader
 import com.classdojo.android.spans.interfaces.StyleMarker
+import com.classdojo.android.spans.interfaces.StyledTextReader
 
 class StringFormattedNode(
     private val pattern:String,

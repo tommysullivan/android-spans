@@ -1,6 +1,9 @@
 package com.classdojo.android.spans.impl
 
-import com.classdojo.android.spans.interfaces.*
+import com.classdojo.android.spans.interfaces.ConvertibleToSpannableString
+import com.classdojo.android.spans.interfaces.SpannableString
+import com.classdojo.android.spans.interfaces.SpannableStringFactory
+import com.classdojo.android.spans.interfaces.StyledTextReader
 
 class ConvertibleToSpannableStringImpl(
     private val spannableStringFactory: SpannableStringFactory,

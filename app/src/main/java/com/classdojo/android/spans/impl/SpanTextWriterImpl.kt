@@ -1,6 +1,9 @@
 package com.classdojo.android.spans.impl
 
-import com.classdojo.android.spans.interfaces.*
+import com.classdojo.android.spans.interfaces.SpanTextWriter
+import com.classdojo.android.spans.interfaces.StyleReader
+import com.classdojo.android.spans.interfaces.StyledTextReaderFactoryForPlainText
+import com.classdojo.android.spans.interfaces.Subspannable
 
 class SpanTextWriterImpl<TypeToReturnForChainedOperations>(
     private val styledTextReaderFactoryForPlainText: StyledTextReaderFactoryForPlainText,
