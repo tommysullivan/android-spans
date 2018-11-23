@@ -1,6 +1,6 @@
 package com.classdojo.android.spans.interfaces
 
-interface CombinesTextReaderSequences<T> {
-    fun newSpanSequenceBuilder(sequenceOfStyledTextReadersToBuildUpon: List<StyledTextReader>): T
+interface CombinesTextReaderSequences<TypeToReturnForChainedOperations> {
+    fun newSpanBuilderForSequence(sequenceOfStyledTextReadersToBuildUpon: List<StyledTextReader>): TypeToReturnForChainedOperations
     fun newStyledTextReaderFromSequence(sequenceOfStyledTextReadersToGroupIntoSingleReader: List<StyledTextReader>): StyledTextReader
 }

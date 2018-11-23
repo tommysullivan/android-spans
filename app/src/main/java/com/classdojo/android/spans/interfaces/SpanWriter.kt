@@ -1,7 +1,7 @@
 package com.classdojo.android.spans.interfaces
 
-interface SpanWriter<T> :
-    SpanTextWriter<T>,
-    SubspanContainer<T>,
-    TranslatedTextWriter<T>,
+interface SpanWriter<TypeToReturnForChainedOperations> :
+    SpanTextWriter<TypeToReturnForChainedOperations>,
+    Subspannable<TypeToReturnForChainedOperations>,
+    TranslatedTextWriter<TypeToReturnForChainedOperations>,
     ConvertibleToReadOnlySpan

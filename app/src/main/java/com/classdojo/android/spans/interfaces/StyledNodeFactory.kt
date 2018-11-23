@@ -1,6 +1,6 @@
 package com.classdojo.android.spans.interfaces
 
-interface StyledNodeFactory<T> {
-    fun newStyledNodeBuilder(styleReader: StyleReader, styledTextReaderToStyleFurther: StyledTextReader): T
-    fun newStyledNodeReader(styleReader: StyleReader, styledTextReaderToStyleFurther: StyledTextReader): StyledTextReader
+interface StyledNodeFactory<TypeToReturnForChainedOperations> {
+    fun newStyledSpanBuilder(styleReader: StyleReader, styledTextReaderToStyleFurther: StyledTextReader): TypeToReturnForChainedOperations
+    fun newStyledTextReaderWithExplicitStyle(styleReader: StyleReader, styledTextReaderToStyleFurther: StyledTextReader): StyledTextReader
 }

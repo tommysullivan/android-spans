@@ -1,6 +1,6 @@
 package com.classdojo.android.spans
 
-import com.classdojo.android.spans.impl.SpansImplWithReader
+import com.classdojo.android.spans.impl.SpansImpl
 import com.classdojo.android.spans.interfaces.SpannableString
 import com.classdojo.android.spans.interfaces.StyleMarker
 import io.mockk.*
@@ -12,7 +12,7 @@ import org.junit.Test
 class SpansImplTest(
     private val mockSpannableString:SpannableString,
     getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
-) : SpansImplWithReader(getStringResourceWithoutPerformingReplacements) {
+) : SpansImpl(getStringResourceWithoutPerformingReplacements) {
     override fun newSpannableString(text: String): SpannableString = mockSpannableString
 }
 

@@ -2,29 +2,24 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.*
 
-class TextNodeBuilder<T>(
-    private val combinesTextReaderSequences: CombinesTextReaderSequences<T>,
-    private val styledNodeFactory: StyledNodeFactory<T>,
-    private val nodeReaderBasic: StyledTextReader
-) : SubspanContainer<T> {
+class TextNodeBuilder<TypeToReturnForChainedOperations>(
+    private val combinesTextReaderSequences: CombinesTextReaderSequences<TypeToReturnForChainedOperations>,
+    private val styledNodeFactory: StyledNodeFactory<TypeToReturnForChainedOperations>,
+    private val previousStyledText: StyledTextReader
+) : Subspannable<TypeToReturnForChainedOperations> {
 
-    //TODO: Use this more efficient addText instead of SpanTextWriter
-//    fun addText(text:String):T {
-//        return textNodeFactory.newTextNodeBuilder(nodeReader.fullText() + text)
-//    }
-
-    override fun addStyledSpan(styleReader: StyleReader, nodeReaderBasic: StyledTextReader): T {
-        return addSubspan(styledNodeFactory.newStyledNodeReader(
+    override fun addStyledSpan(styleReader: StyleReader, styledTextToAdd: StyledTextReader): TypeToReturnForChainedOperations {
+        return addSubspan(styledNodeFactory.newStyledTextReaderWithExplicitStyle(
             styleReader,
-            nodeReaderBasic
+            styledTextToAdd
         ))
     }
 
-    override fun addSubspan(nodeReaderBasic: StyledTextReader): T {
-        return combinesTextReaderSequences.newSpanSequenceBuilder(
+    override fun addSubspan(styledTextReaderForSubspan: StyledTextReader): TypeToReturnForChainedOperations {
+        return combinesTextReaderSequences.newSpanBuilderForSequence(
             listOf(
-                this.nodeReaderBasic,
-                nodeReaderBasic
+                this.previousStyledText,
+                styledTextReaderForSubspan
             )
         )
     }

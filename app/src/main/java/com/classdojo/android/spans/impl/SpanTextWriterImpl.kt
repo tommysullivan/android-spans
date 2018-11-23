@@ -2,17 +2,16 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.*
 
-class SpanTextWriterImpl<T>(
-    private val stylesFactory: StylesFactory,
+class SpanTextWriterImpl<TypeToReturnForChainedOperations>(
     private val styledTextReaderFactoryForPlainText: StyledTextReaderFactoryForPlainText,
-    private val subspanContainer: SubspanContainer<T>
-) : SpanTextWriter<T>
+    private val subspannable: Subspannable<TypeToReturnForChainedOperations>
+) : SpanTextWriter<TypeToReturnForChainedOperations>
 {
-    override fun addText(text: String): T {
-        return subspanContainer.addSubspan(styledTextReaderFactoryForPlainText.newTextNodeReader(text))
+    override fun addText(text: String): TypeToReturnForChainedOperations {
+        return subspannable.addSubspan(styledTextReaderFactoryForPlainText.newStyledTextReader(text))
     }
 
-    override fun addStyledText(styleReader: StyleReader, text: String): T {
-        return subspanContainer.addStyledSpan(styleReader, styledTextReaderFactoryForPlainText.newTextNodeReader(text))
+    override fun addStyledText(styleReader: StyleReader, text: String): TypeToReturnForChainedOperations {
+        return subspannable.addStyledSpan(styleReader, styledTextReaderFactoryForPlainText.newStyledTextReader(text))
     }
 }

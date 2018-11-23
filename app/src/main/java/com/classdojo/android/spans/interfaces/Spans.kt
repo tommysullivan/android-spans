@@ -1,11 +1,13 @@
 package com.classdojo.android.spans.interfaces
 
-interface Spans<T> :
+interface Spans : SpansOfT<Span>
+
+interface SpansOfT<TypeToReturnForChainedOperations> :
     StyledTextReaderFactoryForPlainText,
-    CombinesTextReaderSequences<T>,
-    StyledNodeFactory<T>,
+    CombinesTextReaderSequences<TypeToReturnForChainedOperations>,
+    StyledNodeFactory<TypeToReturnForChainedOperations>,
     StyleMarkerFactory,
     StylesFactory,
     SpannableStringFactory,
     TranslatedStyledTextReaderFactory,
-    TextNodeBuilderFactory<T>
+    TextNodeBuilderFactory<TypeToReturnForChainedOperations>

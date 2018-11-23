@@ -3,12 +3,12 @@ package com.classdojo.android.spans.impl
 import android.support.annotation.StringRes
 import com.classdojo.android.spans.interfaces.*
 
-class StyledTextReaderThatPerformsTranslationsAndReplacementsDynamically<T>(
+class LazilyTranslatedAndReplacedTextReader<TypeToReturnForChainedOperations>(
     @StringRes private val stringResourceIdOfTranslationWithPossiblePlacholders:Int,
     private val styledTextToSubstituteInForPlaceholders:List<StyledTextReader>,
     private val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String,
     private val styledTextReaderFactoryForPlainText: StyledTextReaderFactoryForPlainText,
-    private val combinesTextReaderSequences: CombinesTextReaderSequences<T>
+    private val combinesTextReaderSequences: CombinesTextReaderSequences<TypeToReturnForChainedOperations>
 ) : StyledTextReader {
 
     override fun fullText(): String {
@@ -22,7 +22,7 @@ class StyledTextReaderThatPerformsTranslationsAndReplacementsDynamically<T>(
     fun styledTextReaderEncapsulatingSequenceOfLiteralsAndPlaceholders():StyledTextReader {
         return combinesTextReaderSequences.newStyledTextReaderFromSequence(
             literalsAndPlaceholdersInOrder().map{ literalOrPlaceholderSubstring ->
-                if(literalOrPlaceholderSubstring.isLiteralString) styledTextReaderFactoryForPlainText.newTextNodeReader(literalOrPlaceholderSubstring.text)
+                if(literalOrPlaceholderSubstring.isLiteralString) styledTextReaderFactoryForPlainText.newStyledTextReader(literalOrPlaceholderSubstring.text)
                 else StringFormattedNode(
                     literalOrPlaceholderSubstring.text,
                     styledTextToSubstituteInForPlaceholders,
@@ -36,25 +36,33 @@ class StyledTextReaderThatPerformsTranslationsAndReplacementsDynamically<T>(
 
     fun literalsAndPlaceholdersInOrder():List<LiteralOrPlaceholderString> {
         val regexThatMatchesPlaceholderTokensAndDoublePercentSigns = Regex("%((\\d+)\\\$)?(%|dd|dm|dh|[ds])")
-        val stringResourceWithUnreplacedPlaceholders = getStringResourceWithoutPerformingReplacements(stringResourceIdOfTranslationWithPossiblePlacholders)
-        val literalsAndPlaceholdersListWithIndexOfEndOfLastMatch = regexThatMatchesPlaceholderTokensAndDoublePercentSigns
-            .findAll(stringResourceWithUnreplacedPlaceholders)
-            .fold(Pair(emptyList<LiteralOrPlaceholderString>(), 0)) {
-                literalsAndPlaceholdersSoFar, currentRegexMatch -> (
-                    appendLiteralAndOrPlaceholderBasedOnMatchAndMoveIndexFurtherAlong(
-                        currentRegexMatch,
-                        literalsAndPlaceholdersSoFar,
-                        stringResourceWithUnreplacedPlaceholders
+        val stringResourceWithUnreplacedPlaceholders =
+            getStringResourceWithoutPerformingReplacements(stringResourceIdOfTranslationWithPossiblePlacholders)
+        val literalsAndPlaceholdersListWithIndexOfEndOfLastMatch =
+            regexThatMatchesPlaceholderTokensAndDoublePercentSigns
+                .findAll(stringResourceWithUnreplacedPlaceholders)
+                .fold(
+                    Pair(
+                        emptyList<LiteralOrPlaceholderString>(),
+                        0
                     )
-                )
-            }
+                ) { literalsAndPlaceholdersSoFar, currentRegexMatch ->
+                    (
+                            appendLiteralAndOrPlaceholderBasedOnMatchAndMoveIndexFurtherAlong(
+                                currentRegexMatch,
+                                literalsAndPlaceholdersSoFar,
+                                stringResourceWithUnreplacedPlaceholders
+                            )
+                            )
+                }
 
-        val literalsAndPlaceholdersWithLastSectionPossiblyMissing = literalsAndPlaceholdersListWithIndexOfEndOfLastMatch.first
+        val literalsAndPlaceholdersWithLastSectionPossiblyMissing =
+            literalsAndPlaceholdersListWithIndexOfEndOfLastMatch.first
         val indexOfEndOfLastMatch = literalsAndPlaceholdersListWithIndexOfEndOfLastMatch.second
         val atEndOfString = indexOfEndOfLastMatch == stringResourceWithUnreplacedPlaceholders.lastIndex
-        val allLiteralsAndPlaceholders = if(atEndOfString)
-            literalsAndPlaceholdersWithLastSectionPossiblyMissing
-        else {
+        val allLiteralsAndPlaceholders = if (atEndOfString) {
+                literalsAndPlaceholdersWithLastSectionPossiblyMissing
+        } else {
             val lastPlainTextSection = LiteralOrPlaceholderString(
                 true,
                 stringResourceWithUnreplacedPlaceholders.substring(indexOfEndOfLastMatch),

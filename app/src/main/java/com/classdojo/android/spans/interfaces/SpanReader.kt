@@ -1,3 +1,3 @@
 package com.classdojo.android.spans.interfaces
 
-interface SpanReader : ConvertibleToSpannableString, StyledTextReader {}
+interface SpanReader : ConvertibleToSpannableString, StyledTextReader

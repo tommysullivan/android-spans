@@ -2,29 +2,23 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.*
 
-//TODO: Combine the factories into a single open factory
-open class SpansImplWithReader(
-    val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
-) : SpansImplT<Span>(getStringResourceWithoutPerformingReplacements)  {
-    override val factory = { b:SpanWriter<Span>, reader:SpanReader -> SpanImpl(b, reader) }
-}
-
-abstract class SpansImplT<T>(
+open class SpansImpl(
     private val getStringResourceWithoutPerformingReplacements:(resourceId:Int) -> String
-) : Spans<T> {
-    abstract val factory:(spanBuilder:SpanWriter<T>, spanReader:SpanReader) -> T
+) : Spans {
 
     override fun newSpannableString(text: String): SpannableString {
-        return OurSpannableString(text)
+        return SpannableStringImpl(text)
     }
 
-    override fun newTextNodeReader(text: String): StyledTextReader {
+    fun newSpan(b:SpanWriter<Span>, reader:SpanReader):Span = SpanImpl(b, reader)
+
+    override fun newStyledTextReader(text: String): StyledTextReader {
         return StyledTextReaderImpl(text)
     }
 
-    override fun newSpanSequenceBuilder(sequenceOfStyledTextReadersToBuildUpon: List<StyledTextReader>): T {
+    override fun newSpanBuilderForSequence(sequenceOfStyledTextReadersToBuildUpon: List<StyledTextReader>): Span {
         return newT(
-            ContainerNodeBuilder<T>(
+            SubspannableImpl<Span>(
                 this,
                 this,
                 sequenceOfStyledTextReadersToBuildUpon
@@ -33,21 +27,21 @@ abstract class SpansImplT<T>(
         )
     }
 
-    private fun newT(subspanContainer: SubspanContainer<T>, spanReader:SpanReader):T {
-        return factory(newNodeBuilderEnhanced(subspanContainer, spanReader), spanReader)
+    private fun newT(subspannable: Subspannable<Span>, spanReader:SpanReader): Span {
+        return newSpan(newNodeBuilderEnhanced(subspannable, spanReader), spanReader)
     }
 
-    private fun newNodeBuilderEnhanced(subspanContainer: SubspanContainer<T>, spanReader:SpanReader):SpanWriter<T> {
-        return SpanWriterImpl<T>(
-            newNodeBuilderTextHelpersImpl(subspanContainer),
-            subspanContainer,
-            TranslatedTextWriterImpl(this, subspanContainer),
+    private fun newNodeBuilderEnhanced(subspannable: Subspannable<Span>, spanReader:SpanReader):SpanWriter<Span> {
+        return SpanWriterImpl<Span>(
+            newNodeBuilderTextHelpersImpl(subspannable),
+            subspannable,
+            TranslatedTextWriterImpl(this, subspannable),
             ConvertibleToReadOnlySpanImpl(spanReader)
         )
     }
 
-    private fun newNodeBuilderTextHelpersImpl(subspanContainer: SubspanContainer<T>) =
-        SpanTextWriterImpl(this, this, subspanContainer)
+    private fun newNodeBuilderTextHelpersImpl(subspannable: Subspannable<Span>) =
+        SpanTextWriterImpl(this, subspannable)
 
     private fun newNodeReader(nodeReaderBasic:StyledTextReader):SpanReader {
         return SpanReaderImpl(
@@ -57,10 +51,10 @@ abstract class SpansImplT<T>(
     }
 
     override fun newStyledTextReaderFromSequence(sequenceOfStyledTextReadersToGroupIntoSingleReader: List<StyledTextReader>): StyledTextReader {
-        return ContainerNodeReaderImpl(sequenceOfStyledTextReadersToGroupIntoSingleReader)
+        return SubspannableReader(sequenceOfStyledTextReadersToGroupIntoSingleReader)
     }
 
-    override fun newStyledNodeBuilder(styleReader: StyleReader, styledTextReaderToStyleFurther: StyledTextReader): T {
+    override fun newStyledSpanBuilder(styleReader: StyleReader, styledTextReaderToStyleFurther: StyledTextReader): Span {
         return newT(
             StyledNodeBuilderImpl(
                 this,
@@ -68,16 +62,16 @@ abstract class SpansImplT<T>(
                 styleReader,
                 styledTextReaderToStyleFurther
             ),
-            newNodeReader(newStyledNodeReader(styleReader, styledTextReaderToStyleFurther))
+            newNodeReader(newStyledTextReaderWithExplicitStyle(styleReader, styledTextReaderToStyleFurther))
         )
     }
 
-    override fun newStyledNodeReader(styleReader: StyleReader, styledTextReaderToStyleFurther: StyledTextReader): StyledTextReader {
+    override fun newStyledTextReaderWithExplicitStyle(styleReader: StyleReader, styledTextReaderToStyleFurther: StyledTextReader): StyledTextReader {
         return StyledNodeReaderImpl(this, styledTextReaderToStyleFurther, styleReader)
     }
 
-    override fun newStyleMarker(startIndex: Int, length: Int, styleBuilder: StyleReader): StyleMarker {
-        return StyleMarkerImpl(startIndex, length, styleBuilder, this)
+    override fun newStyleMarker(startIndex: Int, length: Int, styleReader: StyleReader): StyleMarker {
+        return StyleMarkerImpl(startIndex, length, styleReader, this)
     }
 
     override fun styleBuilder(): StyleBuilder {
@@ -96,14 +90,14 @@ abstract class SpansImplT<T>(
         return StyleBuilderImpl(crappyAndroidStyleObjects, this)
     }
 
-    override fun newTextNodeBuilder(): T {
+    override fun newTextNodeBuilder(): Span {
         return newTextNodeBuilder("")
     }
 
-    override fun newTextNodeBuilder(text: String): T {
-        val textNodeReader = newNodeReader(newTextNodeReader(text))
+    override fun newTextNodeBuilder(text: String): Span {
+        val textNodeReader = newNodeReader(newStyledTextReader(text))
         return newT(
-            TextNodeBuilder<T>(
+            TextNodeBuilder<Span>(
                 this,
                 this,
                 textNodeReader
@@ -113,7 +107,7 @@ abstract class SpansImplT<T>(
     }
 
     override fun newTranslatedStyledTextReader(stringResourceIdOfTranslationWithPossiblePlacholders: Int, vararg styledTextToSubstituteInForPlaceholders: StyledTextReader): StyledTextReader {
-        return StyledTextReaderThatPerformsTranslationsAndReplacementsDynamically(
+        return LazilyTranslatedAndReplacedTextReader(
             stringResourceIdOfTranslationWithPossiblePlacholders,
             listOf(*styledTextToSubstituteInForPlaceholders),
             getStringResourceWithoutPerformingReplacements,

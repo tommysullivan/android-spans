@@ -2,13 +2,13 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.*
 
-class SpanWriterImpl<T>(
-    spanTextWriter:SpanTextWriter<T>,
-    subspanContainer:SubspanContainer<T>,
-    translatedTextWriter:TranslatedTextWriter<T>,
+class SpanWriterImpl<TypeToReturnForChainedOperations>(
+    spanTextWriter:SpanTextWriter<TypeToReturnForChainedOperations>,
+    subspannable:Subspannable<TypeToReturnForChainedOperations>,
+    translatedTextWriter:TranslatedTextWriter<TypeToReturnForChainedOperations>,
     convertibleToReadOnlySpan:ConvertibleToReadOnlySpan
-) : SpanWriter<T>,
-    SpanTextWriter<T> by spanTextWriter,
-    SubspanContainer<T> by subspanContainer,
-    TranslatedTextWriter<T> by translatedTextWriter,
+) : SpanWriter<TypeToReturnForChainedOperations>,
+    SpanTextWriter<TypeToReturnForChainedOperations> by spanTextWriter,
+    Subspannable<TypeToReturnForChainedOperations> by subspannable,
+    TranslatedTextWriter<TypeToReturnForChainedOperations> by translatedTextWriter,
     ConvertibleToReadOnlySpan by convertibleToReadOnlySpan

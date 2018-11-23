@@ -2,26 +2,26 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.*
 
-class StyledNodeBuilderImpl<T>(
-    private val styledNodeFactory:StyledNodeFactory<T>,
-    private val combinesTextReaderSequences: CombinesTextReaderSequences<T>,
+class StyledNodeBuilderImpl<TypeToReturnForChainedOperations>(
+    private val styledNodeFactory:StyledNodeFactory<TypeToReturnForChainedOperations>,
+    private val combinesTextReaderSequences: CombinesTextReaderSequences<TypeToReturnForChainedOperations>,
     private val styleReader: StyleReader,
-    private val nodeReaderBasic: StyledTextReader
-) : SubspanContainer<T> {
+    private val styledTextReader: StyledTextReader
+) : Subspannable<TypeToReturnForChainedOperations> {
 
-    override fun addStyledSpan(styleReader: StyleReader, nodeReaderBasic: StyledTextReader): T {
-        return addSubspan(styledNodeFactory.newStyledNodeReader(
+    override fun addStyledSpan(styleReader: StyleReader, styledTextReader: StyledTextReader): TypeToReturnForChainedOperations {
+        return addSubspan(styledNodeFactory.newStyledTextReaderWithExplicitStyle(
             styleReader,
-            nodeReaderBasic
+            styledTextReader
         ))
     }
 
-    override fun addSubspan(nodeReaderBasic: StyledTextReader): T {
-        return styledNodeFactory.newStyledNodeBuilder(
+    override fun addSubspan(nodeReaderBasic: StyledTextReader): TypeToReturnForChainedOperations {
+        return styledNodeFactory.newStyledSpanBuilder(
             this.styleReader,
             combinesTextReaderSequences.newStyledTextReaderFromSequence(
                 listOf(
-                    this.nodeReaderBasic,
+                    this.styledTextReader,
                     nodeReaderBasic
                 )
             )

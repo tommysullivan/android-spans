@@ -2,13 +2,13 @@ package com.classdojo.android.spans.impl
 
 import com.classdojo.android.spans.interfaces.StyleBuilder
 
-class SizeImpl<T>(
-    private val newStyleBuilderWithColor: Function1<T, StyleBuilder>,
-    private val _tiny: T,
-    private val _small: T,
-    private val _normal: T,
-    private val _large: T,
-    private val _huge: T
+class SizeImpl<NativeSizeType>(
+    private val newStyleBuilderWithColor: Function1<NativeSizeType, StyleBuilder>,
+    private val _tiny: NativeSizeType,
+    private val _small: NativeSizeType,
+    private val _normal: NativeSizeType,
+    private val _large: NativeSizeType,
+    private val _huge: NativeSizeType
 ) : StyleBuilder.Size {
 
     override fun tiny(): StyleBuilder = newStyleBuilderWithColor(_tiny)

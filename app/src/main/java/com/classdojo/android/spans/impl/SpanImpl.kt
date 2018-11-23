@@ -5,8 +5,8 @@ import com.classdojo.android.spans.interfaces.SpanWriter
 import com.classdojo.android.spans.interfaces.SpanReader
 
 class SpanImpl(
-    base: SpanWriter<Span>,
-    reader: SpanReader
+    spanWriter: SpanWriter<Span>,
+    spanReader: SpanReader
 ) : Span,
-    SpanWriter<Span> by base,
-    SpanReader by reader
+    SpanWriter<Span> by spanWriter,
+    SpanReader by spanReader
