@@ -15,7 +15,6 @@ After cloning the repository to a development environment, development tasks can
 
 ** Should
 TODO: Use callbacks for subSections to take advantage of kotlin's "it" so they need not refer over and over to top level factories `spans` and `styles`
-TODO: Use get() fields for no-arg methods of the style and other interfaces
 TODO: Memoize all instance computations (even functions with same arguments can be memoized)
 TODO: Support %d, %dm, %dd, %dh - tough because we would need to retrieve subSpans as number and date objects (now we have only fullText())
 TODO: Automate tests upon build

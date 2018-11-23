@@ -5,27 +5,27 @@ import com.classdojo.android.spans.interfaces.StyleBuilder
 
 class ColorImpl(private val newStyleBuilderWithColor: (Int) -> StyleBuilder) : StyleBuilder.Color {
 
-    override fun red(): StyleBuilder {
-        return newStyleBuilderWithColor(Color.RED)
+    override val red: StyleBuilder by lazy {
+        newStyleBuilderWithColor(Color.RED)
     }
 
-    override fun green(): StyleBuilder {
-        return newStyleBuilderWithColor(Color.GREEN)
+    override val green: StyleBuilder by lazy {
+        newStyleBuilderWithColor(Color.GREEN)
     }
 
-    override fun blue(): StyleBuilder {
-        return newStyleBuilderWithColor(Color.BLUE)
+    override val blue: StyleBuilder by lazy {
+        newStyleBuilderWithColor(Color.BLUE)
     }
 
-    override fun yellow(): StyleBuilder {
-        return newStyleBuilderWithColor(Color.YELLOW)
+    override val yellow: StyleBuilder by lazy {
+        newStyleBuilderWithColor(Color.YELLOW)
     }
 
-    override fun black(): StyleBuilder {
-        return newStyleBuilderWithColor(Color.BLACK)
+    override val black: StyleBuilder by lazy {
+        newStyleBuilderWithColor(Color.BLACK)
     }
 
-    override fun gray(): StyleBuilder {
-        return newStyleBuilderWithColor(Color.GRAY)
+    override val gray: StyleBuilder by lazy {
+        newStyleBuilderWithColor(Color.GRAY)
     }
 }

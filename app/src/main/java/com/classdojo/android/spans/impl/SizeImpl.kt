@@ -11,9 +11,9 @@ class SizeImpl<NativeSizeType>(
     private val _huge: NativeSizeType
 ) : StyleBuilder.Size {
 
-    override fun tiny(): StyleBuilder = newStyleBuilderWithColor(_tiny)
-    override fun small(): StyleBuilder = newStyleBuilderWithColor(_small)
-    override fun normal(): StyleBuilder = newStyleBuilderWithColor(_normal)
-    override fun large(): StyleBuilder = newStyleBuilderWithColor(_large)
-    override fun huge(): StyleBuilder = newStyleBuilderWithColor(_huge)
+    override val tiny: StyleBuilder by lazy { newStyleBuilderWithColor(_tiny) }
+    override val small: StyleBuilder by lazy { newStyleBuilderWithColor(_small) }
+    override val normal: StyleBuilder by lazy { newStyleBuilderWithColor(_normal) }
+    override val large: StyleBuilder by lazy { newStyleBuilderWithColor(_large) }
+    override val huge: StyleBuilder by lazy { newStyleBuilderWithColor(_huge) }
 }

@@ -14,8 +14,8 @@ class StyleBuilderImpl(
     private val stylesFactory: StylesFactory
 ) : StyleBuilder, StyleReader, Styles {
 
-    override fun color(): StyleBuilder.Color {
-        return ColorImpl { color: Int -> this.color(color) }
+    override val color: StyleBuilder.Color by lazy {
+        ColorImpl { color: Int -> this.color(color) }
     }
 
     class CustomClickableSpan(private val clickHandler:() -> Unit) : ClickableSpan() {
@@ -40,8 +40,8 @@ class StyleBuilderImpl(
         return stylesFactory.styleBuilder(styleObjects + additionalStyle)
     }
 
-    override fun sizeRelative(): StyleBuilder.Size {
-        return SizeImpl(
+    override val sizeRelative: StyleBuilder.Size by lazy {
+        SizeImpl(
             { size: Float -> this.sizeRelative(size) },
             0.4f,
             0.8f,
@@ -66,8 +66,8 @@ class StyleBuilderImpl(
         return newStyleBuilderWithAdditionalStyle(AbsoluteSizeSpan(size!!))
     }
 
-    override fun sizeAbsolute(): StyleBuilder.Size {
-        return SizeImpl(
+    override val sizeAbsolute: StyleBuilder.Size by lazy {
+        SizeImpl(
             { size: Int -> this.sizeAbsolute(size) },
             12,
             18,

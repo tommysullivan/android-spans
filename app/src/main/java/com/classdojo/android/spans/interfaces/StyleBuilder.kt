@@ -4,30 +4,30 @@ import android.support.annotation.ColorInt
 import android.support.annotation.FloatRange
 
 interface StyleBuilder : StyleReader {
-    fun color(): Color
+    val color:Color
     fun color(@ColorInt color: Int?): StyleBuilder
 
     interface Color {
-        fun red(): StyleBuilder
-        fun green(): StyleBuilder
-        fun blue(): StyleBuilder
-        fun yellow(): StyleBuilder
-        fun black(): StyleBuilder
-        fun gray(): StyleBuilder
+        val red: StyleBuilder
+        val green: StyleBuilder
+        val blue: StyleBuilder
+        val yellow: StyleBuilder
+        val black: StyleBuilder
+        val gray: StyleBuilder
     }
 
     fun sizeRelative(@FloatRange(from = 0.0) size: Float?): StyleBuilder
-    fun sizeRelative(): Size
+    val sizeRelative: Size
 
     fun sizeAbsolute(size: Int?): StyleBuilder
-    fun sizeAbsolute(): Size
+    val sizeAbsolute: Size
 
     interface Size {
-        fun tiny(): StyleBuilder
-        fun small(): StyleBuilder
-        fun normal(): StyleBuilder
-        fun large(): StyleBuilder
-        fun huge(): StyleBuilder
+        val tiny: StyleBuilder
+        val small: StyleBuilder
+        val normal: StyleBuilder
+        val large: StyleBuilder
+        val huge: StyleBuilder
     }
 
     fun onClick(clickHandler:() -> Unit):StyleBuilder

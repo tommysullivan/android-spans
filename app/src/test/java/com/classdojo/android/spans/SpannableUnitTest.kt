@@ -30,10 +30,10 @@ class SpannableUnitTest {
         val styles = spansForTesting.styles()
         val spanUnderTest = emptySpan
             .addText("Tommy")
-            .addStyledText(styles.color().red(), " is red")
+            .addStyledText(styles.color.red, " is red")
             .addText(" but not blue")
             .addStyledSpan(
-                styles.color().green().onClick{-> Unit},
+                styles.color.green.onClick{-> Unit},
                 emptySpan.addText("green text")
             )
 
@@ -63,7 +63,7 @@ class SpannableUnitTest {
         val spanUnderTest = emptySpan.addTranslatedText(
             1,
             emptySpan.addText(" swe").addText("nu "),
-            emptySpan.addStyledText(styles.color().red(), " flaenu ")
+            emptySpan.addStyledText(styles.color.red, " flaenu ")
         )
         assertEquals("tom swenu mike swenu  flaenu myes%3\$s", spanUnderTest.fullText())
     }
