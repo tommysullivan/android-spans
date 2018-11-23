@@ -10,14 +10,12 @@ open class SpansImpl(
         return SpannableStringImpl(text)
     }
 
-    fun newSpan(b:SpanWriter<Span>, reader:SpanReader):Span = SpanImpl(b, reader)
-
     override fun newStyledTextReader(text: String): StyledTextReader {
         return StyledTextReaderImpl(text)
     }
 
     override fun newSpanBuilderForSequence(sequenceOfStyledTextReadersToBuildUpon: List<StyledTextReader>): Span {
-        return newT(
+        return newSpan(
             SubspannableImpl<Span>(
                 this,
                 this,
@@ -27,8 +25,8 @@ open class SpansImpl(
         )
     }
 
-    private fun newT(subspannable: Subspannable<Span>, spanReader:SpanReader): Span {
-        return newSpan(newNodeBuilderEnhanced(subspannable, spanReader), spanReader)
+    private fun newSpan(subspannable: Subspannable<Span>, spanReader:SpanReader): Span {
+        return SpanImpl(newNodeBuilderEnhanced(subspannable, spanReader), spanReader)
     }
 
     private fun newNodeBuilderEnhanced(subspannable: Subspannable<Span>, spanReader:SpanReader):SpanWriter<Span> {
@@ -55,7 +53,7 @@ open class SpansImpl(
     }
 
     override fun newStyledSpanBuilder(styleReader: StyleReader, styledTextReaderToStyleFurther: StyledTextReader): Span {
-        return newT(
+        return newSpan(
             StyledNodeBuilderImpl(
                 this,
                 this,
@@ -90,13 +88,13 @@ open class SpansImpl(
         return StyleBuilderImpl(crappyAndroidStyleObjects, this)
     }
 
-    override fun newTextNodeBuilder(): Span {
+    override fun newEmptySpan(): Span {
         return newTextNodeBuilder("")
     }
 
     override fun newTextNodeBuilder(text: String): Span {
         val textNodeReader = newNodeReader(newStyledTextReader(text))
-        return newT(
+        return newSpan(
             TextNodeBuilder<Span>(
                 this,
                 this,
