@@ -28,11 +28,10 @@ class TranslatedSpanTestCases {
         val template = "tom%1\$smike%1\$s%2\$smyes%%3\$s"
         val spansForTesting = SpansForTesting(mockSpannableString) { _ -> template }
         val emptySpan = spansForTesting.newEmptySpan()
-        val styles = spansForTesting.styles()
         val spanUnderTest = emptySpan.addTranslatedText(
             1,
             emptySpan.addText(" swe").addText("nu "),
-            emptySpan.addStyledText(styles.color.red, " flaenu ")
+            emptySpan.addStyledText(" flaenu ") {it.hasColor.red}
         )
         assertEquals("tom swenu mike swenu  flaenu myes%3\$s", spanUnderTest.fullText())
     }

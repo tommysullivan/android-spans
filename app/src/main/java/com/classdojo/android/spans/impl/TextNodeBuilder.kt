@@ -5,12 +5,13 @@ import com.classdojo.android.spans.interfaces.*
 class TextNodeBuilder<TypeToReturnForChainedOperations>(
     private val combinesTextReaderSequences: CombinesTextReaderSequences<TypeToReturnForChainedOperations>,
     private val styledNodeFactory: StyledNodeFactory<TypeToReturnForChainedOperations>,
-    private val previousStyledText: StyledTextReader
+    private val previousStyledText: StyledTextReader,
+    private val emptyStyleBuilder:StyleBuilder
 ) : Subspannable<TypeToReturnForChainedOperations> {
 
-    override fun addStyledSpan(styleReader: StyleReader, styledTextToAdd: StyledTextReader): TypeToReturnForChainedOperations {
+    override fun addStyledSpan(styleBuilderBlock: StyleBuilderBlock, styledTextToAdd: StyledTextReader): TypeToReturnForChainedOperations {
         return addSubspan(styledNodeFactory.newStyledTextReaderWithExplicitStyle(
-            styleReader,
+            styleBuilderBlock(emptyStyleBuilder),
             styledTextToAdd
         ))
     }

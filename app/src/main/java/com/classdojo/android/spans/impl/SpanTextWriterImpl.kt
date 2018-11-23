@@ -1,9 +1,6 @@
 package com.classdojo.android.spans.impl
 
-import com.classdojo.android.spans.interfaces.SpanTextWriter
-import com.classdojo.android.spans.interfaces.StyleReader
-import com.classdojo.android.spans.interfaces.StyledTextReaderFactoryForPlainText
-import com.classdojo.android.spans.interfaces.Subspannable
+import com.classdojo.android.spans.interfaces.*
 
 class SpanTextWriterImpl<TypeToReturnForChainedOperations>(
     private val styledTextReaderFactoryForPlainText: StyledTextReaderFactoryForPlainText,
@@ -14,7 +11,7 @@ class SpanTextWriterImpl<TypeToReturnForChainedOperations>(
         return subspannable.addSubspan(styledTextReaderFactoryForPlainText.newStyledTextReader(text))
     }
 
-    override fun addStyledText(styleReader: StyleReader, text: String): TypeToReturnForChainedOperations {
-        return subspannable.addStyledSpan(styleReader, styledTextReaderFactoryForPlainText.newStyledTextReader(text))
+    override fun addStyledText(textToStyle: String, styleBuilderBlock: StyleBuilderBlock): TypeToReturnForChainedOperations {
+        return subspannable.addStyledSpan(styleBuilderBlock, styledTextReaderFactoryForPlainText.newStyledTextReader(textToStyle))
     }
 }

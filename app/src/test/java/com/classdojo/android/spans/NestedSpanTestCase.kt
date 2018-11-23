@@ -10,13 +10,12 @@ class NestedSpanTestCase {
         val mockSpannableString = newMockSpannableString()
         val spansForTesting = SpansForTesting(mockSpannableString) { _ -> throw NotImplementedError() }
         val emptySpan = spansForTesting.newEmptySpan()
-        val styles = spansForTesting.styles()
         val spanUnderTest = emptySpan
             .addText("Tommy")
-            .addStyledText(styles.color.red, " is red")
+            .addStyledText(" is red") {it.hasColor.red}
             .addText(" but not blue")
             .addStyledSpan(
-                styles.color.green.onClick{-> Unit},
+                {it.hasColor.green.onClick{-> Unit}},
                 emptySpan.addText("green text")
             )
 
@@ -24,5 +23,4 @@ class NestedSpanTestCase {
         Assert.assertNotNull(spanUnderTest.asSpannableString())
         verify { mockSpannableString.setSpan(any(), 5, 12, any()) }
     }
-
 }

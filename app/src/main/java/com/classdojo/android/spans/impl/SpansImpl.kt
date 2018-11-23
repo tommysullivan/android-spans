@@ -19,7 +19,8 @@ open class SpansImpl(
             SubspannableImpl<Span>(
                 this,
                 this,
-                sequenceOfStyledTextReadersToBuildUpon
+                sequenceOfStyledTextReadersToBuildUpon,
+                newStyleBuilder()
             ),
             newNodeReader(newStyledTextReaderFromSequence(sequenceOfStyledTextReadersToBuildUpon))
         )
@@ -54,11 +55,12 @@ open class SpansImpl(
 
     override fun newStyledSpanBuilder(styleReader: StyleReader, styledTextReaderToStyleFurther: StyledTextReader): Span {
         return newSpan(
-            StyledNodeBuilderImpl(
+            StyledTextReaderWithAdditionalStyle(
                 this,
                 this,
                 styleReader,
-                styledTextReaderToStyleFurther
+                styledTextReaderToStyleFurther,
+                newStyleBuilder()
             ),
             newNodeReader(newStyledTextReaderWithExplicitStyle(styleReader, styledTextReaderToStyleFurther))
         )
@@ -72,7 +74,7 @@ open class SpansImpl(
         return StyleMarkerImpl(startIndex, length, styleReader, this)
     }
 
-    override fun styleBuilder(): StyleBuilder {
+    override fun newStyleBuilder(): StyleBuilder {
         return styles()
     }
 
@@ -98,7 +100,8 @@ open class SpansImpl(
             TextNodeBuilder<Span>(
                 this,
                 this,
-                textNodeReader
+                textNodeReader,
+                newStyleBuilder()
             ),
             textNodeReader
         )

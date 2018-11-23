@@ -14,8 +14,8 @@ class StyleBuilderImpl(
     private val stylesFactory: StylesFactory
 ) : StyleBuilder, StyleReader, Styles {
 
-    override val color: StyleBuilder.Color by lazy {
-        ColorImpl { color: Int -> this.color(color) }
+    override val hasColor: StyleBuilder.Color by lazy {
+        ColorImpl { color: Int -> this.hasColor(color) }
     }
 
     class CustomClickableSpan(private val clickHandler:() -> Unit) : ClickableSpan() {
@@ -28,7 +28,7 @@ class StyleBuilderImpl(
         return newStyleBuilderWithAdditionalStyle(CustomClickableSpan(clickHandler))
     }
 
-    override fun color(@ColorInt color: Int?): StyleBuilder {
+    override fun hasColor(@ColorInt color: Int?): StyleBuilder {
         return newStyleBuilderWithAdditionalStyle(ForegroundColorSpan(color!!))
     }
 

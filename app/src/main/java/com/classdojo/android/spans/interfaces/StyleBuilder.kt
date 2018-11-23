@@ -4,8 +4,8 @@ import android.support.annotation.ColorInt
 import android.support.annotation.FloatRange
 
 interface StyleBuilder : StyleReader {
-    val color:Color
-    fun color(@ColorInt color: Int?): StyleBuilder
+    val hasColor:Color
+    fun hasColor(@ColorInt color: Int?): StyleBuilder
 
     interface Color {
         val red: StyleBuilder
